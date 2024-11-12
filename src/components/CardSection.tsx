@@ -112,7 +112,8 @@ export default function CardSection() {
     const section = sectionRef.current
     const cardElements = document.querySelectorAll('.card-item')
     const totalCards = cardElements.length
-    const isMobile = window.innerWidth < 1024 // Check for mobile
+    const isMobile = window.innerWidth < 1024 || 
+                    /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
     if (!section || !cardElements.length) return
 
@@ -141,16 +142,23 @@ export default function CardSection() {
     setupCards()
 
     const handleResize = () => {
+      const newIsMobile = window.innerWidth < 1024 || 
+                         /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+      
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
       setupCards()
-      if (!isMobile) { // Only reinitialize ScrollTrigger on desktop
+      
+      if (!newIsMobile) {
         initScrollTrigger()
       }
     }
 
     const initScrollTrigger = () => {
-      // Don't initialize ScrollTrigger on mobile
-      if (isMobile) return () => {}
+      if (isMobile) {
+        // For mobile, just show the stack without scroll animation
+        section.style.height = 'auto'
+        return () => {}
+      }
 
       const ctx = gsap.context(() => {
         ScrollTrigger.create({
