@@ -68,7 +68,7 @@ export default function Home() {
               transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
             >
               <Image 
-                src="/assets/HeroPhone.png"
+                src="/assets/HeroPhoneFinal.png"
                 alt="Hero Phone"
                 width={1800}
                 height={1800}
@@ -119,7 +119,7 @@ export default function Home() {
               transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
             >
               <Image 
-                src="/assets/HeroPhone.png"
+                src="/assets/HeroPhoneFinal.png"
                 alt="Hero Phone"
                 width={1800}
                 height={1800}
