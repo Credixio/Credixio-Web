@@ -112,8 +112,7 @@ export default function CardSection() {
     const section = sectionRef.current
     const cardElements = document.querySelectorAll('.card-item')
     const totalCards = cardElements.length
-    const isMobile = window.innerWidth < 1024 || 
-                    /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    const isMobile = window.innerWidth < 1024 // Check for mobile
 
     if (!section || !cardElements.length) return
 
@@ -142,34 +141,24 @@ export default function CardSection() {
     setupCards()
 
     const handleResize = () => {
-      const newIsMobile = window.innerWidth < 1024 || 
-                         /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-      
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
       setupCards()
-      
-      if (!newIsMobile) {
+      if (!isMobile) { // Only reinitialize ScrollTrigger on desktop
         initScrollTrigger()
       }
     }
 
     const initScrollTrigger = () => {
-      if (isMobile) {
-        // For mobile, just show the stack without scroll animation
-        section.style.height = 'auto'
-        return () => {}
-      }
-
       const ctx = gsap.context(() => {
         ScrollTrigger.create({
           trigger: section,
-          start: "top 1%",
+          start: "top top",
           end: "+=200%",
           pin: true,
-          scrub: 0.5,
+          pinSpacing: true,
           anticipatePin: 1,
-          preventOverlaps: true,
-          fastScrollEnd: true,
+          scrub: 1,
+          invalidateOnRefresh: true,
           onUpdate: (self) => {
             const progress = Math.max(0, Math.min(self.progress * 1.1, 0.99))
             const currentIndex = Math.floor(progress * (totalCards - 0.01))
@@ -434,11 +423,9 @@ export default function CardSection() {
       <section 
         ref={sectionRef} 
         id="card" 
-        className="w-full relative h-screen z-10 lg:overflow-hidden"
+        className="w-full h-screen sticky top-0 z-10"
         style={{
-          touchAction: 'pan-y',
-          overscrollBehavior: 'auto', // Changed from contain
-          willChange: 'transform'
+          WebkitTransform: 'translate3d(0,0,0)',
         }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
