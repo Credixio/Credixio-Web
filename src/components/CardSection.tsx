@@ -160,7 +160,6 @@ export default function CardSection() {
           scrub: 1,
           anticipatePin: 1,
           fastScrollEnd: true,
-          markers: true, // Temporarily add markers to debug
           onUpdate: (self) => {
             const progress = Math.max(0, Math.min(self.progress * 1.1, 0.99))
             const currentIndex = Math.floor(progress * (totalCards - 0.01))
@@ -427,16 +426,11 @@ export default function CardSection() {
         id="card" 
         className="w-full h-screen"
         style={{
-          position: 'sticky' as const,
+          position: 'sticky',
           top: 0,
           zIndex: 10,
-          WebkitTransform: 'translate3d(0,0,0)',
-          transform: 'translate3d(0,0,0)',
-          WebkitBackfaceVisibility: 'hidden',
-          backfaceVisibility: 'hidden',
-          WebkitPerspective: 1000,
-          perspective: 1000,
-          WebkitOverflowScrolling: 'touch',
+          WebkitTransform: 'translateZ(0)',
+          transform: 'translateZ(0)',
         }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
@@ -519,25 +513,14 @@ export default function CardSection() {
                     <div className="mobile-features-container flex-1 min-h-0">
                       {isClient && (
                         <div 
-                          className="h-full overflow-x-scroll hide-scrollbar scroll-smooth"
+                          className="h-full overflow-x-scroll hide-scrollbar"
                           onScroll={(e) => {
                             const container = e.currentTarget
                             const slideWidth = container.clientWidth * 0.85 + 16
-                            const maxScroll = container.scrollWidth - container.clientWidth
-                            const scrollPosition = container.scrollLeft
-                            
-                            // Calculate current slide more accurately
-                            const newSlide = Math.round(scrollPosition / slideWidth)
-                            const totalSlides = getFeatureSlides(selectedCard.features).length
-                            
-                            // Ensure slide index is within bounds
-                            if (newSlide >= 0 && newSlide < totalSlides && newSlide !== currentSlide) {
+                            const newSlide = Math.round(container.scrollLeft / slideWidth)
+                            if (newSlide !== currentSlide) {
                               setCurrentSlide(newSlide)
                             }
-                          }}
-                          style={{
-                            scrollSnapType: 'x mandatory',
-                            scrollBehavior: 'smooth'
                           }}
                         >
                           <div className="flex h-full">
@@ -545,10 +528,6 @@ export default function CardSection() {
                               <div 
                                 key={slideIndex}
                                 className="flex-none w-[85%] space-y-2 px-1 mr-4"
-                                style={{
-                                  scrollSnapAlign: 'start',
-                                  scrollSnapStop: 'always'
-                                }}
                               >
                                 {slide.features.map((feature, featureIndex) => (
                                   <div 
