@@ -423,9 +423,15 @@ export default function CardSection() {
       <section 
         ref={sectionRef} 
         id="card" 
-        className="w-full h-screen sticky top-0 z-10"
+        className="w-full h-screen lg:h-auto relative"
         style={{
-          WebkitTransform: 'translate3d(0,0,0)',
+          position: '-webkit-sticky',
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          WebkitTransform: 'translateZ(0)',
+          WebkitBackfaceVisibility: 'hidden',
+          WebkitPerspective: 1000,
         }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
