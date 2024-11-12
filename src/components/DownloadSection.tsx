@@ -108,7 +108,7 @@ export default function DownloadSection() {
               }}
             >
               <Image
-                src="/assets/HeroPhone.png"
+                src="/assets/HeroPhoneFinal.png"
                 alt="CRDX App"
                 fill
                 className="object-contain"
