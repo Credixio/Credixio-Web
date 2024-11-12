@@ -43,9 +43,9 @@ const footerLinks = [
 ]
 
 const socialLinks = [
-  { name: "Twitter", icon: "/assets/twitter.png", href: "#" },
-  { name: "LinkedIn", icon: "/assets/linkedin.png", href: "#" },
-  { name: "Instagram", icon: "/assets/instagram.png", href: "#" },
+  { name: "X", icon: "/assets/x-logo.png", href: "#" },
+  { name: "LinkedIn", icon: "/assets/linkdin-logo.png", href: "#" },
+  { name: "Instagram", icon: "/assets/instagram-logo.png", href: "#" },
 ]
 
 export default function Footer() {
