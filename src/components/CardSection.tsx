@@ -425,8 +425,7 @@ export default function CardSection() {
         id="card" 
         className="w-full h-screen lg:h-auto relative"
         style={{
-          position: '-webkit-sticky',
-          position: 'sticky',
+          position: 'sticky' as const,
           top: 0,
           zIndex: 10,
           WebkitTransform: 'translateZ(0)',
