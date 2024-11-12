@@ -87,10 +87,17 @@ const cards: CardInfo[] = [
   }
 ]
 
+// Add this new type for feature slides
+type FeatureSlide = {
+  features: string[]
+}
+
 export default function CardSection() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
   const [selectedCard, setSelectedCard] = useState(cards[0])
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [totalSlides, setTotalSlides] = useState(0)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -198,6 +205,87 @@ export default function CardSection() {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
     }
   }, [])
+
+  // Update the getFeatureSlides function to be fully dynamic
+  const getFeatureSlides = (features: string[]): FeatureSlide[] => {
+    const slides: FeatureSlide[] = []
+    
+    // Fixed heights for other elements in the card
+    const headerHeight = 140  // Height for title + card name + padding
+    const dotsHeight = 24    // Height for navigation dots + margin
+    const verticalPadding = 32 // Total vertical padding
+    
+    // Calculate available height for features
+    const totalCardHeight = window.innerHeight * 0.6 - 80 // 60vh - 80px (from parent container)
+    const availableHeight = totalCardHeight - (headerHeight + dotsHeight + verticalPadding)
+    
+    // Calculate how many features can fit in one slide
+    const singleFeatureHeight = 56 // Height of single feature including margin
+    const featuresPerSlide = Math.max(2, Math.floor(availableHeight / singleFeatureHeight))
+    
+    // Split features into slides
+    for (let i = 0; i < features.length; i += featuresPerSlide) {
+      slides.push({
+        features: features.slice(i, i + featuresPerSlide)
+      })
+    }
+    
+    return slides
+  }
+
+  // Add useEffect to handle dynamic slide adjustment
+  useEffect(() => {
+    const handleResize = () => {
+      const features = selectedCard.features
+      setTotalSlides(getFeatureSlides(features).length)
+      setCurrentSlide(0) // Reset to first slide on resize
+    }
+
+    handleResize() // Initial call
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [selectedCard])
+
+  // Update the scroll handling functions
+  const handleScrollEnd = (container: HTMLElement) => {
+    const slideWidth = container.clientWidth * 0.85 + 16 // width + margin
+    const maxScroll = container.scrollWidth - container.clientWidth
+    let targetScroll = Math.round(container.scrollLeft / slideWidth) * slideWidth
+    
+    // Ensure we don't scroll beyond bounds
+    targetScroll = Math.max(0, Math.min(targetScroll, maxScroll))
+    
+    container.scrollTo({
+      left: targetScroll,
+      behavior: 'smooth'
+    })
+  }
+
+  // Add scroll end detection
+  useEffect(() => {
+    let scrollTimeout: NodeJS.Timeout
+    const container = document.querySelector('.overflow-x-scroll')
+
+    const handleScroll = (e: Event) => {
+      clearTimeout(scrollTimeout)
+      scrollTimeout = setTimeout(() => {
+        if (container instanceof HTMLElement) {
+          handleScrollEnd(container)
+        }
+      }, 150)
+    }
+
+    if (container) {
+      container.addEventListener('scroll', handleScroll)
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener('scroll', handleScroll)
+      }
+      clearTimeout(scrollTimeout)
+    }
+  }, [selectedCard])
 
   return (
     <>
@@ -368,7 +456,7 @@ export default function CardSection() {
               {/* Right Side - Card Info */}
               <div className="lg:w-1/2 min-h-[300px] h-[calc(60vh-80px)] lg:h-[600px] flex items-start lg:items-center">
                 <motion.div 
-                  className="p-4 lg:p-8 rounded-3xl w-full z-10 h-full"
+                  className="p-4 pt-5 sm:pt-6 lg:p-8 rounded-3xl w-full z-10 h-full max-w-[90vw] mx-auto flex flex-col"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
@@ -380,41 +468,21 @@ export default function CardSection() {
                     border: '1px solid rgba(255, 255, 255, 0.1)'
                   }}
                 >
-                  {/* Fixed Header */}
-                  <div className="mb-4">
-                    <h2 className={`${bebasNeue.className} text-2xl lg:text-4xl text-white mb-3 lg:mb-6`}>
+                  {/* Fixed Header - Updated padding */}
+                  <div className="mb-4 lg:mb-4 flex-shrink-0 pt-1 sm:pt-2">
+                    <h2 className={`${bebasNeue.className} text-2xl lg:text-4xl text-white mb-2 lg:mb-6`}>
                       Find the Perfect Credit Card for You
                     </h2>
-                    <h3 className={`${bebasNeue.className} text-lg lg:text-2xl`}>
+                    <h3 className={`${bebasNeue.className} text-xl lg:text-2xl`}>
                       <span className="text-[#FFD700]">CRDX</span>
                       <span className="text-white">{selectedCard.name}</span>
                     </h3>
                   </div>
 
-                  {/* Scrollable Content */}
-                  <div 
-                    className="overflow-y-auto pr-6 h-[calc(100%-140px)]"
-                    style={{ 
-                      scrollbarWidth: 'thin',
-                      scrollbarColor: '#4A4A4A transparent',
-                    }}
-                  >
-                    <style jsx global>{`
-                      .overflow-y-auto::-webkit-scrollbar {
-                        width: 8px;
-                      }
-                      .overflow-y-auto::-webkit-scrollbar-track {
-                        background: transparent;
-                      }
-                      .overflow-y-auto::-webkit-scrollbar-thumb {
-                        background-color: #4A4A4A;
-                        border-radius: 20px;
-                        border: 2px solid transparent;
-                        background-clip: padding-box;
-                      }
-                    `}</style>
+                  {/* Desktop Content remains unchanged */}
+                  <div className="hidden lg:block overflow-y-auto pr-6 flex-1">
                     <motion.ul 
-                      className="space-y-2 lg:space-y-4 text-sm lg:text-base"
+                      className="space-y-4"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
@@ -426,6 +494,87 @@ export default function CardSection() {
                         </li>
                       ))}
                     </motion.ul>
+                  </div>
+
+                  {/* Mobile Carousel Content */}
+                  <div className="lg:hidden flex-1 flex flex-col" style={{ height: 'calc(100% - 120px)' }}>
+                    <div className="mobile-features-container flex-1 min-h-0">
+                      <div 
+                        className="h-full overflow-x-scroll hide-scrollbar scroll-smooth"
+                        onScroll={(e) => {
+                          const container = e.currentTarget
+                          const slideWidth = container.clientWidth * 0.85 + 16
+                          const maxScroll = container.scrollWidth - container.clientWidth
+                          const scrollPosition = container.scrollLeft
+                          
+                          // Calculate current slide more accurately
+                          const newSlide = Math.round(scrollPosition / slideWidth)
+                          const totalSlides = getFeatureSlides(selectedCard.features).length
+                          
+                          // Ensure slide index is within bounds
+                          if (newSlide >= 0 && newSlide < totalSlides && newSlide !== currentSlide) {
+                            setCurrentSlide(newSlide)
+                          }
+                        }}
+                        style={{
+                          scrollSnapType: 'x mandatory',
+                          scrollBehavior: 'smooth'
+                        }}
+                      >
+                        <div className="flex h-full">
+                          {getFeatureSlides(selectedCard.features).map((slide, slideIndex) => (
+                            <div 
+                              key={slideIndex}
+                              className="flex-none w-[85%] space-y-2 px-1 mr-4"
+                              style={{
+                                scrollSnapAlign: 'start',
+                                scrollSnapStop: 'always'
+                              }}
+                            >
+                              {slide.features.map((feature, featureIndex) => (
+                                <div 
+                                  key={featureIndex}
+                                  className="text-white text-xs sm:text-sm leading-relaxed p-2.5 rounded-xl"
+                                  style={{
+                                    background: 'linear-gradient(135deg, rgba(217, 217, 217, 0.1) 0%, rgba(115, 115, 115, 0) 100%)'
+                                  }}
+                                >
+                                  {feature}
+                                </div>
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Navigation Dots */}
+                    {getFeatureSlides(selectedCard.features).length > 1 && (
+                      <div className="flex-shrink-0 flex justify-center gap-1.5 mt-2">
+                        {getFeatureSlides(selectedCard.features).map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => {
+                              const container = document.querySelector('.overflow-x-scroll')
+                              if (container instanceof HTMLElement) {
+                                const slideWidth = container.clientWidth * 0.85 + 16
+                                const targetScroll = index * slideWidth
+                                const maxScroll = container.scrollWidth - container.clientWidth
+                                
+                                container.scrollTo({
+                                  left: Math.min(targetScroll, maxScroll),
+                                  behavior: 'smooth'
+                                })
+                                setCurrentSlide(index)
+                              }
+                            }}
+                            className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                              currentSlide === index ? 'bg-[#FFD700]' : 'bg-white/30'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               </div>
