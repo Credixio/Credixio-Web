@@ -156,10 +156,15 @@ export default function CardSection() {
           end: "+=200%",
           pin: true,
           pinSpacing: true,
-          pinType: "fixed",
-          scrub: 1,
+          pinReparent: true,
           anticipatePin: 1,
-          fastScrollEnd: true,
+          scrub: 1,
+          onEnter: () => {
+            if (section) {
+              section.style.transform = 'translateZ(0)'
+              section.offsetHeight
+            }
+          },
           onUpdate: (self) => {
             const progress = Math.max(0, Math.min(self.progress * 1.1, 0.99))
             const currentIndex = Math.floor(progress * (totalCards - 0.01))
@@ -424,13 +429,14 @@ export default function CardSection() {
       <section 
         ref={sectionRef} 
         id="card" 
-        className="w-full h-screen"
+        className="w-full h-screen sticky top-0 z-10"
         style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          WebkitTransform: 'translateZ(0)',
-          transform: 'translateZ(0)',
+          WebkitTransform: 'translate3d(0,0,0)',
+          transform: 'translate3d(0,0,0)',
+          WebkitBackfaceVisibility: 'hidden',
+          backfaceVisibility: 'hidden',
+          WebkitPerspective: 1000,
+          perspective: 1000,
         }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
@@ -514,6 +520,11 @@ export default function CardSection() {
                       {isClient && (
                         <div 
                           className="h-full overflow-x-scroll hide-scrollbar"
+                          style={{
+                            WebkitOverflowScrolling: 'touch',
+                            scrollSnapType: 'x mandatory',
+                            scrollBehavior: 'smooth'
+                          }}
                           onScroll={(e) => {
                             const container = e.currentTarget
                             const slideWidth = container.clientWidth * 0.85 + 16
@@ -528,6 +539,9 @@ export default function CardSection() {
                               <div 
                                 key={slideIndex}
                                 className="flex-none w-[85%] space-y-2 px-1 mr-4"
+                                style={{
+                                  scrollSnapAlign: 'center'
+                                }}
                               >
                                 {slide.features.map((feature, featureIndex) => (
                                   <div 
