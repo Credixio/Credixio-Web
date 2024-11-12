@@ -427,8 +427,7 @@ export default function CardSection() {
         id="card" 
         className="w-full h-screen"
         style={{
-          position: '-webkit-sticky',
-          position: 'sticky',
+          position: 'sticky' as const,
           top: 0,
           zIndex: 10,
           WebkitTransform: 'translate3d(0,0,0)',
@@ -437,7 +436,7 @@ export default function CardSection() {
           backfaceVisibility: 'hidden',
           WebkitPerspective: 1000,
           perspective: 1000,
-          WebkitOverflowScrolling: 'touch', // Add for iOS momentum scrolling
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
