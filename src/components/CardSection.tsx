@@ -112,7 +112,6 @@ export default function CardSection() {
     const section = sectionRef.current
     const cardElements = document.querySelectorAll('.card-item')
     const totalCards = cardElements.length
-    const isMobile = window.innerWidth < 1024 // Check for mobile
 
     if (!section || !cardElements.length) return
 
@@ -143,9 +142,7 @@ export default function CardSection() {
     const handleResize = () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
       setupCards()
-      if (!isMobile) { // Only reinitialize ScrollTrigger on desktop
-        initScrollTrigger()
-      }
+      initScrollTrigger()
     }
 
     const initScrollTrigger = () => {
@@ -155,16 +152,8 @@ export default function CardSection() {
           start: "top top",
           end: "+=200%",
           pin: true,
-          pinSpacing: true,
-          pinReparent: true,
           anticipatePin: 1,
           scrub: 1,
-          onEnter: () => {
-            if (section) {
-              section.style.transform = 'translateZ(0)'
-              section.offsetHeight
-            }
-          },
           onUpdate: (self) => {
             const progress = Math.max(0, Math.min(self.progress * 1.1, 0.99))
             const currentIndex = Math.floor(progress * (totalCards - 0.01))
@@ -429,14 +418,11 @@ export default function CardSection() {
       <section 
         ref={sectionRef} 
         id="card" 
-        className="w-full h-screen sticky top-0 z-10 block"
+        className="w-full relative h-screen z-10"
         style={{
-          WebkitTransform: 'translate3d(0,0,0)',
-          transform: 'translate3d(0,0,0)',
-          WebkitBackfaceVisibility: 'hidden',
-          backfaceVisibility: 'hidden',
-          WebkitPerspective: 1000,
-          perspective: 1000,
+          touchAction: 'pan-y',
+          overscrollBehavior: 'contain',
+          willChange: 'transform'
         }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
