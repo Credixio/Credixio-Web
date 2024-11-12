@@ -98,6 +98,11 @@ export default function CardSection() {
   const [selectedCard, setSelectedCard] = useState(cards[0])
   const [currentSlide, setCurrentSlide] = useState(0)
   const [totalSlides, setTotalSlides] = useState(0)
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -206,7 +211,7 @@ export default function CardSection() {
     }
   }, [])
 
-  // Update the getFeatureSlides function to be fully dynamic
+  // Update the getFeatureSlides function to handle server-side rendering
   const getFeatureSlides = (features: string[]): FeatureSlide[] => {
     const slides: FeatureSlide[] = []
     
@@ -215,8 +220,10 @@ export default function CardSection() {
     const dotsHeight = 24    // Height for navigation dots + margin
     const verticalPadding = 32 // Total vertical padding
     
-    // Calculate available height for features
-    const totalCardHeight = window.innerHeight * 0.6 - 80 // 60vh - 80px (from parent container)
+    // Calculate available height for features - safely handle window access
+    const totalCardHeight = typeof window !== 'undefined' 
+      ? window.innerHeight * 0.6 - 80 
+      : 600 // Default height for SSR
     const availableHeight = totalCardHeight - (headerHeight + dotsHeight + verticalPadding)
     
     // Calculate how many features can fit in one slide
@@ -499,57 +506,59 @@ export default function CardSection() {
                   {/* Mobile Carousel Content */}
                   <div className="lg:hidden flex-1 flex flex-col" style={{ height: 'calc(100% - 120px)' }}>
                     <div className="mobile-features-container flex-1 min-h-0">
-                      <div 
-                        className="h-full overflow-x-scroll hide-scrollbar scroll-smooth"
-                        onScroll={(e) => {
-                          const container = e.currentTarget
-                          const slideWidth = container.clientWidth * 0.85 + 16
-                          const maxScroll = container.scrollWidth - container.clientWidth
-                          const scrollPosition = container.scrollLeft
-                          
-                          // Calculate current slide more accurately
-                          const newSlide = Math.round(scrollPosition / slideWidth)
-                          const totalSlides = getFeatureSlides(selectedCard.features).length
-                          
-                          // Ensure slide index is within bounds
-                          if (newSlide >= 0 && newSlide < totalSlides && newSlide !== currentSlide) {
-                            setCurrentSlide(newSlide)
-                          }
-                        }}
-                        style={{
-                          scrollSnapType: 'x mandatory',
-                          scrollBehavior: 'smooth'
-                        }}
-                      >
-                        <div className="flex h-full">
-                          {getFeatureSlides(selectedCard.features).map((slide, slideIndex) => (
-                            <div 
-                              key={slideIndex}
-                              className="flex-none w-[85%] space-y-2 px-1 mr-4"
-                              style={{
-                                scrollSnapAlign: 'start',
-                                scrollSnapStop: 'always'
-                              }}
-                            >
-                              {slide.features.map((feature, featureIndex) => (
-                                <div 
-                                  key={featureIndex}
-                                  className="text-white text-xs sm:text-sm leading-relaxed p-2.5 rounded-xl"
-                                  style={{
-                                    background: 'linear-gradient(135deg, rgba(217, 217, 217, 0.1) 0%, rgba(115, 115, 115, 0) 100%)'
-                                  }}
-                                >
-                                  {feature}
-                                </div>
-                              ))}
-                            </div>
-                          ))}
+                      {isClient && ( // Only render carousel on client-side
+                        <div 
+                          className="h-full overflow-x-scroll hide-scrollbar scroll-smooth"
+                          onScroll={(e) => {
+                            const container = e.currentTarget
+                            const slideWidth = container.clientWidth * 0.85 + 16
+                            const maxScroll = container.scrollWidth - container.clientWidth
+                            const scrollPosition = container.scrollLeft
+                            
+                            // Calculate current slide more accurately
+                            const newSlide = Math.round(scrollPosition / slideWidth)
+                            const totalSlides = getFeatureSlides(selectedCard.features).length
+                            
+                            // Ensure slide index is within bounds
+                            if (newSlide >= 0 && newSlide < totalSlides && newSlide !== currentSlide) {
+                              setCurrentSlide(newSlide)
+                            }
+                          }}
+                          style={{
+                            scrollSnapType: 'x mandatory',
+                            scrollBehavior: 'smooth'
+                          }}
+                        >
+                          <div className="flex h-full">
+                            {getFeatureSlides(selectedCard.features).map((slide, slideIndex) => (
+                              <div 
+                                key={slideIndex}
+                                className="flex-none w-[85%] space-y-2 px-1 mr-4"
+                                style={{
+                                  scrollSnapAlign: 'start',
+                                  scrollSnapStop: 'always'
+                                }}
+                              >
+                                {slide.features.map((feature, featureIndex) => (
+                                  <div 
+                                    key={featureIndex}
+                                    className="text-white text-xs sm:text-sm leading-relaxed p-2.5 rounded-xl"
+                                    style={{
+                                      background: 'linear-gradient(135deg, rgba(217, 217, 217, 0.1) 0%, rgba(115, 115, 115, 0) 100%)'
+                                    }}
+                                  >
+                                    {feature}
+                                  </div>
+                                ))}
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
 
-                    {/* Navigation Dots */}
-                    {getFeatureSlides(selectedCard.features).length > 1 && (
+                    {/* Navigation Dots - Only show on client side */}
+                    {isClient && getFeatureSlides(selectedCard.features).length > 1 && (
                       <div className="flex-shrink-0 flex justify-center gap-1.5 mt-2">
                         {getFeatureSlides(selectedCard.features).map((_, index) => (
                           <button
