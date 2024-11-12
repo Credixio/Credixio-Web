@@ -426,177 +426,175 @@ export default function CardSection() {
       </section>
 
       {/* Card Animation Section */}
-      <div className="w-full h-screen">
-        <section 
-          ref={sectionRef} 
-          id="card" 
-          className="w-full h-screen sticky top-0 z-10"
-          style={{
-            WebkitTransform: 'translate3d(0,0,0)',
-            transform: 'translate3d(0,0,0)',
-            WebkitBackfaceVisibility: 'hidden',
-            backfaceVisibility: 'hidden',
-            WebkitPerspective: 1000,
-            perspective: 1000,
-          }}
-        >
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="max-w-[1440px] w-full px-4 md:px-8 lg:px-32">
-              <div className="flex flex-col lg:flex-row items-center gap-2 lg:gap-12 pt-[80px] lg:pt-0">
-                {/* Left Side - Card Stack */}
-                <div className="lg:w-1/2 h-[200px] lg:h-[600px] flex items-center justify-center relative">
-                  <div ref={cardsRef} className="relative w-[250px] lg:w-[400px] h-[200px] lg:h-[600px] z-20 mx-auto">
-                    {cards.map((card) => (
-                      <div
-                        key={card.id}
-                        className="card-item absolute inset-0 w-full h-full"
-                        style={{
-                          transformOrigin: 'bottom left',
-                          willChange: 'transform',
-                          backfaceVisibility: 'hidden',
-                          perspective: 1000,
-                          WebkitFontSmoothing: 'antialiased',
-                          position: 'absolute'
-                        }}
-                      >
-                        <Image
-                          src={card.image}
-                          alt={`CRDX ${card.name} Card`}
-                          fill
-                          className="object-contain"
-                          priority={card.id === selectedCard.id}
-                          loading="eager"
-                        />
-                      </div>
-                    ))}
-                  </div>
+      <section 
+        ref={sectionRef} 
+        id="card" 
+        className="w-full h-screen sticky top-0 z-10 block"
+        style={{
+          WebkitTransform: 'translate3d(0,0,0)',
+          transform: 'translate3d(0,0,0)',
+          WebkitBackfaceVisibility: 'hidden',
+          backfaceVisibility: 'hidden',
+          WebkitPerspective: 1000,
+          perspective: 1000,
+        }}
+      >
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="max-w-[1440px] w-full px-4 md:px-8 lg:px-32">
+            <div className="flex flex-col lg:flex-row items-center gap-2 lg:gap-12 pt-[80px] lg:pt-0">
+              {/* Left Side - Card Stack */}
+              <div className="lg:w-1/2 h-[200px] lg:h-[600px] flex items-center justify-center relative">
+                <div ref={cardsRef} className="relative w-[250px] lg:w-[400px] h-[200px] lg:h-[600px] z-20 mx-auto">
+                  {cards.map((card) => (
+                    <div
+                      key={card.id}
+                      className="card-item absolute inset-0 w-full h-full"
+                      style={{
+                        transformOrigin: 'bottom left',
+                        willChange: 'transform',
+                        backfaceVisibility: 'hidden',
+                        perspective: 1000,
+                        WebkitFontSmoothing: 'antialiased',
+                        position: 'absolute'
+                      }}
+                    >
+                      <Image
+                        src={card.image}
+                        alt={`CRDX ${card.name} Card`}
+                        fill
+                        className="object-contain"
+                        priority={card.id === selectedCard.id}
+                        loading="eager"
+                      />
+                    </div>
+                  ))}
                 </div>
+              </div>
 
-                {/* Right Side - Card Info */}
-                <div className="lg:w-1/2 min-h-[300px] h-[calc(60vh-80px)] lg:h-[600px] flex items-start lg:items-center">
-                  <motion.div 
-                    className="p-4 pt-5 sm:pt-6 lg:p-8 rounded-3xl w-full z-10 h-full max-w-[90vw] mx-auto flex flex-col"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                    key={selectedCard.id}
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(217, 217, 217, 0.37) 0%, rgba(115, 115, 115, 0) 100%)',
-                      backdropFilter: 'blur(75px)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)'
-                    }}
-                  >
-                    {/* Fixed Header - Updated padding */}
-                    <div className="mb-4 lg:mb-4 flex-shrink-0 pt-1 sm:pt-2">
-                      <h2 className={`${bebasNeue.className} text-2xl lg:text-4xl text-white mb-2 lg:mb-6`}>
-                        Find the Perfect Credit Card for You
-                      </h2>
-                      <h3 className={`${bebasNeue.className} text-xl lg:text-2xl`}>
-                        <span className="text-[#FFD700]">CRDX</span>
-                        <span className="text-white">{selectedCard.name}</span>
-                      </h3>
-                    </div>
+              {/* Right Side - Card Info */}
+              <div className="lg:w-1/2 min-h-[300px] h-[calc(60vh-80px)] lg:h-[600px] flex items-start lg:items-center">
+                <motion.div 
+                  className="p-4 pt-5 sm:pt-6 lg:p-8 rounded-3xl w-full z-10 h-full max-w-[90vw] mx-auto flex flex-col"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  key={selectedCard.id}
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(217, 217, 217, 0.37) 0%, rgba(115, 115, 115, 0) 100%)',
+                    backdropFilter: 'blur(75px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                  }}
+                >
+                  {/* Fixed Header - Updated padding */}
+                  <div className="mb-4 lg:mb-4 flex-shrink-0 pt-1 sm:pt-2">
+                    <h2 className={`${bebasNeue.className} text-2xl lg:text-4xl text-white mb-2 lg:mb-6`}>
+                      Find the Perfect Credit Card for You
+                    </h2>
+                    <h3 className={`${bebasNeue.className} text-xl lg:text-2xl`}>
+                      <span className="text-[#FFD700]">CRDX</span>
+                      <span className="text-white">{selectedCard.name}</span>
+                    </h3>
+                  </div>
 
-                    {/* Desktop Content remains unchanged */}
-                    <div className="hidden lg:block overflow-y-auto pr-6 flex-1">
-                      <motion.ul 
-                        className="space-y-4"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        {selectedCard.features.map((feature, index) => (
-                          <li key={index} className="text-white leading-relaxed">
-                            {feature}
-                          </li>
-                        ))}
-                      </motion.ul>
-                    </div>
+                  {/* Desktop Content remains unchanged */}
+                  <div className="hidden lg:block overflow-y-auto pr-6 flex-1">
+                    <motion.ul 
+                      className="space-y-4"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {selectedCard.features.map((feature, index) => (
+                        <li key={index} className="text-white leading-relaxed">
+                          {feature}
+                        </li>
+                      ))}
+                    </motion.ul>
+                  </div>
 
-                    {/* Mobile Carousel Content */}
-                    <div className="lg:hidden flex-1 flex flex-col" style={{ height: 'calc(100% - 120px)' }}>
-                      <div className="mobile-features-container flex-1 min-h-0">
-                        {isClient && (
-                          <div 
-                            className="h-full overflow-x-scroll hide-scrollbar"
-                            style={{
-                              WebkitOverflowScrolling: 'touch',
-                              scrollSnapType: 'x mandatory',
-                              scrollBehavior: 'smooth'
-                            }}
-                            onScroll={(e) => {
-                              const container = e.currentTarget
-                              const slideWidth = container.clientWidth * 0.85 + 16
-                              const newSlide = Math.round(container.scrollLeft / slideWidth)
-                              if (newSlide !== currentSlide) {
-                                setCurrentSlide(newSlide)
-                              }
-                            }}
-                          >
-                            <div className="flex h-full">
-                              {getFeatureSlides(selectedCard.features).map((slide, slideIndex) => (
-                                <div 
-                                  key={slideIndex}
-                                  className="flex-none w-[85%] space-y-2 px-1 mr-4"
-                                  style={{
-                                    scrollSnapAlign: 'center'
-                                  }}
-                                >
-                                  {slide.features.map((feature, featureIndex) => (
-                                    <div 
-                                      key={featureIndex}
-                                      className="text-white text-sm sm:text-base leading-relaxed p-3 rounded-xl"
-                                      style={{
-                                        background: 'linear-gradient(135deg, rgba(217, 217, 217, 0.1) 0%, rgba(115, 115, 115, 0) 100%)'
-                                      }}
-                                    >
-                                      {feature}
-                                    </div>
-                                  ))}
-                                </div>
-                              ))}
-                            </div>
+                  {/* Mobile Carousel Content */}
+                  <div className="lg:hidden flex-1 flex flex-col" style={{ height: 'calc(100% - 120px)' }}>
+                    <div className="mobile-features-container flex-1 min-h-0">
+                      {isClient && (
+                        <div 
+                          className="h-full overflow-x-scroll hide-scrollbar"
+                          style={{
+                            WebkitOverflowScrolling: 'touch',
+                            scrollSnapType: 'x mandatory',
+                            scrollBehavior: 'smooth'
+                          }}
+                          onScroll={(e) => {
+                            const container = e.currentTarget
+                            const slideWidth = container.clientWidth * 0.85 + 16
+                            const newSlide = Math.round(container.scrollLeft / slideWidth)
+                            if (newSlide !== currentSlide) {
+                              setCurrentSlide(newSlide)
+                            }
+                          }}
+                        >
+                          <div className="flex h-full">
+                            {getFeatureSlides(selectedCard.features).map((slide, slideIndex) => (
+                              <div 
+                                key={slideIndex}
+                                className="flex-none w-[85%] space-y-2 px-1 mr-4"
+                                style={{
+                                  scrollSnapAlign: 'center'
+                                }}
+                              >
+                                {slide.features.map((feature, featureIndex) => (
+                                  <div 
+                                    key={featureIndex}
+                                    className="text-white text-sm sm:text-base leading-relaxed p-3 rounded-xl"
+                                    style={{
+                                      background: 'linear-gradient(135deg, rgba(217, 217, 217, 0.1) 0%, rgba(115, 115, 115, 0) 100%)'
+                                    }}
+                                  >
+                                    {feature}
+                                  </div>
+                                ))}
+                              </div>
+                            ))}
                           </div>
-                        )}
-                      </div>
-
-                      {/* Navigation Dots - Only show on client side */}
-                      {isClient && getFeatureSlides(selectedCard.features).length > 1 && (
-                        <div className="flex-shrink-0 flex justify-center gap-1.5 mt-2">
-                          {getFeatureSlides(selectedCard.features).map((_, index) => (
-                            <button
-                              key={index}
-                              onClick={() => {
-                                const container = document.querySelector('.overflow-x-scroll')
-                                if (container instanceof HTMLElement) {
-                                  const slideWidth = container.clientWidth * 0.85 + 16
-                                  const targetScroll = index * slideWidth
-                                  const maxScroll = container.scrollWidth - container.clientWidth
-                                  
-                                  container.scrollTo({
-                                    left: Math.min(targetScroll, maxScroll),
-                                    behavior: 'smooth'
-                                  })
-                                  setCurrentSlide(index)
-                                }
-                              }}
-                              className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                                currentSlide === index ? 'bg-[#FFD700]' : 'bg-white/30'
-                              }`}
-                            />
-                          ))}
                         </div>
                       )}
                     </div>
-                  </motion.div>
-                </div>
+
+                    {/* Navigation Dots - Only show on client side */}
+                    {isClient && getFeatureSlides(selectedCard.features).length > 1 && (
+                      <div className="flex-shrink-0 flex justify-center gap-1.5 mt-2">
+                        {getFeatureSlides(selectedCard.features).map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => {
+                              const container = document.querySelector('.overflow-x-scroll')
+                              if (container instanceof HTMLElement) {
+                                const slideWidth = container.clientWidth * 0.85 + 16
+                                const targetScroll = index * slideWidth
+                                const maxScroll = container.scrollWidth - container.clientWidth
+                                
+                                container.scrollTo({
+                                  left: Math.min(targetScroll, maxScroll),
+                                  behavior: 'smooth'
+                                })
+                                setCurrentSlide(index)
+                              }
+                            }}
+                            className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                              currentSlide === index ? 'bg-[#FFD700]' : 'bg-white/30'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
               </div>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </>
   )
 }
