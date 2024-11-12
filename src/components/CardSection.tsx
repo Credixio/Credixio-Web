@@ -155,7 +155,12 @@ export default function CardSection() {
           start: "top top",
           end: "+=200%",
           pin: true,
+          pinSpacing: true,
+          pinType: "fixed",
           scrub: 1,
+          anticipatePin: 1,
+          fastScrollEnd: true,
+          markers: true, // Temporarily add markers to debug
           onUpdate: (self) => {
             const progress = Math.max(0, Math.min(self.progress * 1.1, 0.99))
             const currentIndex = Math.floor(progress * (totalCards - 0.01))
@@ -420,12 +425,19 @@ export default function CardSection() {
       <section 
         ref={sectionRef} 
         id="card" 
-        className="w-full h-screen z-10"
+        className="w-full h-screen"
         style={{
+          position: '-webkit-sticky',
           position: 'sticky',
           top: 0,
-          WebkitTransform: 'translateZ(0)',
-          transform: 'translateZ(0)',
+          zIndex: 10,
+          WebkitTransform: 'translate3d(0,0,0)',
+          transform: 'translate3d(0,0,0)',
+          WebkitBackfaceVisibility: 'hidden',
+          backfaceVisibility: 'hidden',
+          WebkitPerspective: 1000,
+          perspective: 1000,
+          WebkitOverflowScrolling: 'touch', // Add for iOS momentum scrolling
         }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
