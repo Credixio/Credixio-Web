@@ -157,7 +157,7 @@ export default function Navbar() {
           </div>
 
           <button className="hidden lg:block bg-transparent border-2 border-[#FFD700] text-[#FFD700] px-8 py-3 rounded-full text-lg font-medium hover:bg-[#FFD700]/10 transition-colors">
-            Chat with us
+            Pre-register now
           </button>
 
           {/* Mobile Menu Button */}
@@ -232,7 +232,7 @@ export default function Navbar() {
                   Why CRDX
                 </Link>
                 <button className="bg-transparent border-2 border-[#FFD700] text-[#FFD700] px-8 py-3 rounded-full text-lg font-medium hover:bg-[#FFD700]/10 transition-colors w-full max-w-[250px]">
-                  Chat with us
+                  Pre-register now
                 </button>
               </div>
             </motion.div>

@@ -138,10 +138,41 @@ export const offerItems: OfferItem[] = [
   }
 ]
 
+// Add this new component for the scroll indicator
+const ScrollIndicator = () => (
+  <motion.div 
+    className="absolute bottom-4 right-4 w-6 h-12 rounded-full border-2 border-[#FFD700] hidden"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.3 }}
+  >
+    <motion.div
+      className="w-1.5 h-1.5 bg-[#FFD700] rounded-full mx-auto mt-2"
+      animate={{
+        y: [0, 16, 0],
+      }}
+      transition={{
+        duration: 1.5,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }}
+    />
+  </motion.div>
+)
+
 export default function OfferSection() {
   const [selectedOffer, setSelectedOffer] = useState<OfferItem>(offerItems[0])
   const [direction, setDirection] = useState(0)
   const [currentMobileCard, setCurrentMobileCard] = useState(0)
+
+  // Add this state to track if content is scrollable
+  const [isScrollable, setIsScrollable] = useState(false)
+
+  // Add this state at the top of the component
+  const [showScrollIndicator, setShowScrollIndicator] = useState(true)
+
+  // Add this state to track if user has scrolled for each card
+  const [scrolledCards, setScrolledCards] = useState<number[]>([])
 
   const slideVariants = {
     enter: (direction: number) => ({
@@ -267,12 +298,54 @@ export default function OfferSection() {
     }
   }, [])
 
+  // Add this useEffect to check if content is scrollable
+  useEffect(() => {
+    const checkScrollable = () => {
+      const content = document.querySelector('.offer-content')
+      if (content) {
+        setIsScrollable(content.scrollHeight > content.clientHeight)
+      }
+    }
+
+    checkScrollable()
+    window.addEventListener('resize', checkScrollable)
+    return () => window.removeEventListener('resize', checkScrollable)
+  }, [selectedOffer])
+
   return (
     <section id="offering" className="w-full bg-background py-12 lg:py-20">
       <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-32">
-        <h2 className={`${bebasNeue.className} text-4xl md:text-5xl lg:text-7xl text-white mb-8 lg:mb-16`}>
-          what do we offer?
-        </h2>
+        {/* Heading and Dots Container */}
+        <div className="flex justify-between items-center mb-8 lg:mb-16">
+          <h2 className={`${bebasNeue.className} text-4xl md:text-5xl lg:text-7xl text-white`}>
+            what do we offer?
+          </h2>
+
+          {/* Mobile Navigation Dots */}
+          <div className="flex gap-1.5 lg:hidden">
+            {offerItems.map((item, index) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  const container = document.querySelector('.overflow-x-scroll')
+                  if (container) {
+                    const cardWidth = container.clientWidth * 0.85
+                    const gap = 16
+                    container.scrollTo({
+                      left: index * (cardWidth + gap),
+                      behavior: 'smooth'
+                    })
+                  }
+                  setCurrentMobileCard(index)
+                  setSelectedOffer(item)
+                }}
+                className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                  currentMobileCard === index ? 'bg-[#FFD700]' : 'bg-white/30'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
 
         {/* Desktop Layout */}
         <div className="hidden lg:flex flex-row gap-8">
@@ -395,7 +468,7 @@ export default function OfferSection() {
               {offerItems.map((item) => (
                 <div 
                   key={item.id}
-                  className="flex-none w-[85vw] h-[450px] rounded-3xl"
+                  className="flex-none w-[85vw] h-[450px] rounded-3xl relative" // Added relative
                   style={{
                     background: 'linear-gradient(135deg, rgba(217, 217, 217, 0.37) 0%, rgba(115, 115, 115, 0) 100%)',
                     backdropFilter: 'blur(75px)',
@@ -418,36 +491,51 @@ export default function OfferSection() {
                       </h3>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto pr-2">
+                    <div className="flex-1 overflow-y-auto pr-2 relative"
+                      onScroll={(e) => {
+                        const target = e.currentTarget
+                        // Mark this card as scrolled using array
+                        setScrolledCards(prev => {
+                          if (!prev.includes(item.id)) {
+                            return [...prev, item.id]
+                          }
+                          return prev
+                        })
+                      }}
+                    >
                       {renderContent(item.content, item)}
+                      
+                      {/* Updated Scroll Indicator - check array instead of Set */}
+                      {item.content.benefits.length > 2 && !scrolledCards.includes(item.id) && (
+                        <motion.div 
+                          className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-[#FFD700] flex items-center justify-center"
+                          animate={{ 
+                            y: [0, 4, 0],
+                            opacity: [1, 0.7, 1]
+                          }}
+                          transition={{ 
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          <svg 
+                            width="16" 
+                            height="16" 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            stroke="#000000"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M6 9l6 6 6-6"/>
+                          </svg>
+                        </motion.div>
+                      )}
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {/* Navigation Dots - Updated to use currentMobileCard */}
-            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-              {offerItems.map((item, index) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    const container = document.querySelector('.overflow-x-scroll')
-                    if (container) {
-                      const cardWidth = container.clientWidth * 0.85
-                      const gap = 16
-                      container.scrollTo({
-                        left: index * (cardWidth + gap),
-                        behavior: 'smooth'
-                      })
-                    }
-                    setCurrentMobileCard(index)
-                    setSelectedOffer(item)
-                  }}
-                  className={`w-3 h-3 rounded-full transition-colors ${
-                    currentMobileCard === index ? 'bg-[#FFD700]' : 'bg-white/30'
-                  }`}
-                />
               ))}
             </div>
           </div>

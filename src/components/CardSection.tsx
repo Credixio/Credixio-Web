@@ -112,6 +112,7 @@ export default function CardSection() {
     const section = sectionRef.current
     const cardElements = document.querySelectorAll('.card-item')
     const totalCards = cardElements.length
+    const isMobile = window.innerWidth < 1024 // Check for mobile
 
     if (!section || !cardElements.length) return
 
@@ -139,14 +140,18 @@ export default function CardSection() {
 
     setupCards()
 
-    // Handle orientation change
     const handleResize = () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
       setupCards()
-      initScrollTrigger()
+      if (!isMobile) { // Only reinitialize ScrollTrigger on desktop
+        initScrollTrigger()
+      }
     }
 
     const initScrollTrigger = () => {
+      // Don't initialize ScrollTrigger on mobile
+      if (isMobile) return () => {}
+
       const ctx = gsap.context(() => {
         ScrollTrigger.create({
           trigger: section,
@@ -155,6 +160,8 @@ export default function CardSection() {
           pin: true,
           scrub: 0.5,
           anticipatePin: 1,
+          preventOverlaps: true,
+          fastScrollEnd: true,
           onUpdate: (self) => {
             const progress = Math.max(0, Math.min(self.progress * 1.1, 0.99))
             const currentIndex = Math.floor(progress * (totalCards - 0.01))
@@ -163,7 +170,6 @@ export default function CardSection() {
             if (currentIndex >= 0 && currentIndex < totalCards) {
               setSelectedCard(cards[currentIndex])
 
-              // Set initial z-index for all cards
               cardElements.forEach((card, i) => {
                 gsap.set(card, {
                   zIndex: isReversing ? 
@@ -172,7 +178,6 @@ export default function CardSection() {
                 })
               })
 
-              // Then animate other properties
               gsap.to(cardElements, {
                 x: i => i < currentIndex ? -window.innerWidth : 0,
                 opacity: 1,
@@ -302,7 +307,7 @@ export default function CardSection() {
           <div className="grid grid-cols-1 md:grid-cols-10 gap-6 lg:gap-8">
             {/* Card 1 - Wider */}
             <motion.div 
-              className="md:col-span-4 space-y-6"
+              className="md:col-span-4 space-y-6 flex flex-col items-center lg:items-start"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -321,7 +326,7 @@ export default function CardSection() {
                 />
               </motion.div>
               <motion.div 
-                className="p-6 rounded-3xl"
+                className="p-6 rounded-3xl w-full"
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300 }}
                 style={{
@@ -340,7 +345,7 @@ export default function CardSection() {
 
             {/* Card 2 */}
             <motion.div 
-              className="md:col-span-3 space-y-6"
+              className="md:col-span-3 space-y-6 flex flex-col items-center lg:items-start"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -359,7 +364,7 @@ export default function CardSection() {
                 />
               </motion.div>
               <motion.div 
-                className="p-6 rounded-3xl"
+                className="p-6 rounded-3xl w-full"
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300 }}
                 style={{
@@ -378,7 +383,7 @@ export default function CardSection() {
 
             {/* Card 3 */}
             <motion.div 
-              className="md:col-span-3 space-y-6"
+              className="md:col-span-3 space-y-6 flex flex-col items-center lg:items-start"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -397,7 +402,7 @@ export default function CardSection() {
                 />
               </motion.div>
               <motion.div 
-                className="p-6 rounded-3xl"
+                className="p-6 rounded-3xl w-full"
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300 }}
                 style={{
@@ -421,10 +426,10 @@ export default function CardSection() {
       <section 
         ref={sectionRef} 
         id="card" 
-        className="w-full relative h-screen z-10"
+        className="w-full relative h-screen z-10 lg:overflow-hidden"
         style={{
           touchAction: 'pan-y',
-          overscrollBehavior: 'contain',
+          overscrollBehavior: 'auto', // Changed from contain
           willChange: 'transform'
         }}
       >
@@ -506,7 +511,7 @@ export default function CardSection() {
                   {/* Mobile Carousel Content */}
                   <div className="lg:hidden flex-1 flex flex-col" style={{ height: 'calc(100% - 120px)' }}>
                     <div className="mobile-features-container flex-1 min-h-0">
-                      {isClient && ( // Only render carousel on client-side
+                      {isClient && (
                         <div 
                           className="h-full overflow-x-scroll hide-scrollbar scroll-smooth"
                           onScroll={(e) => {
@@ -542,7 +547,7 @@ export default function CardSection() {
                                 {slide.features.map((feature, featureIndex) => (
                                   <div 
                                     key={featureIndex}
-                                    className="text-white text-xs sm:text-sm leading-relaxed p-2.5 rounded-xl"
+                                    className="text-white text-sm sm:text-base leading-relaxed p-3 rounded-xl"
                                     style={{
                                       background: 'linear-gradient(135deg, rgba(217, 217, 217, 0.1) 0%, rgba(115, 115, 115, 0) 100%)'
                                     }}

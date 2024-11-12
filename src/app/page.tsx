@@ -9,6 +9,7 @@ import VideoSection from '@/components/VideoSection'
 import CardSection from '@/components/CardSection'
 import ScoreSection from '@/components/ScoreSection'
 import DownloadSection from '@/components/DownloadSection'
+import Footer from '@/components/Footer'
 
 const bebasNeue = Bebas_Neue({
   weight: '400',
@@ -18,12 +19,12 @@ const bebasNeue = Bebas_Neue({
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen bg-[#1A1E1C] overflow-hidden">
+    <main className="relative min-h-screen bg-[#1A1E1C] overflow-x-hidden">
       <Image 
         src="/assets/PageThread.png"
         alt="Background Thread"
         fill
-        className="object-cover object-top opacity-50"
+        className="object-cover object-top opacity-50 fixed"
         style={{ transform: 'scale(1)', transformOrigin: 'top' }}
         priority
       />
@@ -169,6 +170,7 @@ export default function Home() {
       <ScoreSection />
       <OfferSection />
       <DownloadSection />
+      <Footer />
     </main>
   )
 }
