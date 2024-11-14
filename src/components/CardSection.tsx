@@ -150,13 +150,19 @@ export default function CardSection() {
         ScrollTrigger.create({
           trigger: section,
           start: "top top",
-          end: "+=200%",
+          end: () => `+=${section.offsetHeight * 2}`,
           pin: true,
-          pinSpacing: true,
+          pinSpacing: false,
           anticipatePin: 1,
           scrub: 1,
+          fastScrollEnd: true,
+          onEnter: () => {
+            ScrollTrigger.refresh();
+          },
+          onLeave: () => {
+            ScrollTrigger.refresh();
+          },
           onUpdate: (self) => {
-            // Ensure animation works in both directions
             const progress = Math.min(Math.max(self.progress, 0), 0.99)
             const currentIndex = Math.floor(progress * (totalCards - 0.01))
             const isReversing = self.getVelocity() < 0
@@ -174,7 +180,7 @@ export default function CardSection() {
 
               gsap.to(cardElements, {
                 x: i => i < currentIndex ? -window.innerWidth : 0,
-                opacity: i => i < currentIndex ? 0 : 1, // Ensure cards stay visible when scrolling up
+                opacity: i => i < currentIndex ? 0 : 1,
                 rotation: i => {
                   if (i < currentIndex) return 8
                   if (i === currentIndex) return 0
