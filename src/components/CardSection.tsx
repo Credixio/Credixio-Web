@@ -158,17 +158,24 @@ export default function CardSection() {
           onUpdate: (self) => {
             const progress = Math.min(Math.max(self.progress, 0), 0.99)
             const currentIndex = Math.floor(progress * (totalCards - 0.01))
-            const isReversing = self.getVelocity() < 0
-            
+
             if (currentIndex >= 0 && currentIndex < totalCards) {
               setSelectedCard(cards[currentIndex])
 
+              // Updated z-index calculation to keep moving card on top
               cardElements.forEach((card, i) => {
-                gsap.set(card, {
-                  zIndex: isReversing ? 
-                    (i >= currentIndex ? totalCards + (totalCards - i) : i) :
-                    (i <= currentIndex ? totalCards - (currentIndex - i) : totalCards - (i - currentIndex))
-                })
+                let zIndex
+                if (i === currentIndex) {
+                  // Current card is always on top
+                  zIndex = totalCards + 1
+                } else if (i < currentIndex) {
+                  // Cards that have moved out
+                  zIndex = totalCards + 2 // Even higher z-index for moving cards
+                } else {
+                  // Cards in the stack
+                  zIndex = totalCards - (i - currentIndex)
+                }
+                gsap.set(card, { zIndex })
               })
 
               gsap.to(cardElements, {
