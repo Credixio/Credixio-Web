@@ -155,21 +155,6 @@ export default function CardSection() {
           pinSpacing: true,
           anticipatePin: 1,
           scrub: 1,
-          onEnter: () => {
-            ScrollTrigger.refresh();
-          },
-          onLeave: () => {
-            ScrollTrigger.refresh();
-            if (section) {
-              section.style.visibility = 'hidden';
-            }
-          },
-          onEnterBack: () => {
-            ScrollTrigger.refresh();
-            if (section) {
-              section.style.visibility = 'visible';
-            }
-          },
           onUpdate: (self) => {
             const progress = Math.min(Math.max(self.progress, 0), 0.99)
             const currentIndex = Math.floor(progress * (totalCards - 0.01))
@@ -188,7 +173,6 @@ export default function CardSection() {
 
               gsap.to(cardElements, {
                 x: i => i < currentIndex ? -window.innerWidth : 0,
-                opacity: i => i < currentIndex ? 0 : 1,
                 rotation: i => {
                   if (i < currentIndex) return 8
                   if (i === currentIndex) return 0
