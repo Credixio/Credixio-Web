@@ -220,9 +220,10 @@ export default function Home() {
         {/* Main Content Sections */}
         <div className="relative">
           <VideoSection />
-          <div className="relative" style={{ zIndex: 2 }}>
+          {/* Temporarily comment out CardSection */}
+          {/* <div className="relative" style={{ zIndex: 2 }}>
             <CardSection />
-          </div>
+          </div> */}
           <div className="relative" style={{ zIndex: 1 }}>
             <ScoreSection />
             <OfferSection />
