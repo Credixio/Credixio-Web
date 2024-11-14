@@ -19,7 +19,7 @@ const bebasNeue = Bebas_Neue({
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen bg-[#1A1E1C]">
+    <main className="relative min-h-screen bg-[#1A1E1C] overflow-x-clip">
       <div className="absolute inset-0">
         <Image 
           src="/assets/PageThread.png"
@@ -53,7 +53,7 @@ export default function Home() {
               </p>
             </motion.div>
 
-            {/* Right Content */}
+            {/* Right Content - Restored original positioning */}
             <motion.div 
               className="relative w-[140%] -mr-[80%] h-auto overflow-visible -mt-16"
               initial={{ opacity: 0, x: 50 }}
@@ -63,7 +63,7 @@ export default function Home() {
               {/* Background Blur */}
               <div className="absolute right-[-20%] top-1/2 -translate-y-1/2 w-[100%] h-[200px] bg-[#979797] blur-[800px]" />
               
-              {/* Phone */}
+              {/* Phone - Restored original positioning */}
               <motion.div
                 className="absolute left-[70%] -top-[10%] z-10 w-[40%]"
                 initial={{ y: 20 }}
@@ -81,7 +81,7 @@ export default function Home() {
                 />
               </motion.div>
 
-              {/* Card */}
+              {/* Card - Restored original positioning */}
               <motion.div
                 className="absolute left-[10%] -top-[0%] z-20 w-[100%]"
                 initial={{ y: -20 }}
@@ -102,21 +102,21 @@ export default function Home() {
         </div>
 
         {/* Mobile Hero */}
-        <div className="lg:hidden max-w-[1440px] mx-auto px-4 min-h-[calc(100vh-80px)] flex items-center overflow-hidden">
+        <div className="lg:hidden max-w-[1440px] mx-auto px-4 min-h-[calc(100vh-80px)] flex items-center">
           <div className="flex flex-col gap-8 pt-20 w-full">
             {/* Mobile Images */}
             <motion.div 
-              className="relative w-full h-[260px] overflow-hidden"
+              className="relative w-full h-[260px]"
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
             >
               {/* Background Blur */}
-              <div className="absolute left-1/2 transform -translate-x-1/2 top-1/2 -translate-y-1/2 w-[150%] h-[200px] bg-[#979797] blur-[800px]" />
+              <div className="absolute right-[-20%] top-1/2 -translate-y-1/2 w-[100%] h-[200px] bg-[#979797] blur-[800px]" />
               
               {/* Phone */}
               <motion.div
-                className="absolute left-1/2 transform -translate-x-1/2 -top-[20px] z-10 w-[40%]"
+                className="absolute left-1/2 -translate-x-1/2 -top-[20px] z-10 w-[120px]"
                 initial={{ y: 20 }}
                 animate={{ y: 0 }}
                 transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
@@ -134,7 +134,7 @@ export default function Home() {
 
               {/* Card */}
               <motion.div
-                className="absolute left-1/2 transform -translate-x-1/2 top-[40px] z-20 w-[60%]"
+                className="absolute left-[10%] -translate-x-1/2 top-[40px] z-20 w-[250px]"
                 initial={{ y: -20 }}
                 animate={{ y: 0 }}
                 transition={{ duration: 8, repeat: Infinity, repeatType: "reverse", delay: 0.5 }}

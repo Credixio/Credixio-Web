@@ -153,15 +153,11 @@ export default function CardSection() {
           end: "+=200%",
           pin: true,
           pinSpacing: true,
-          pinReparent: true,
-          invalidateOnRefresh: true,
           anticipatePin: 1,
           scrub: 1,
-          fastScrollEnd: true,
-          onEnterBack: () => ScrollTrigger.refresh(),
-          onLeaveBack: () => ScrollTrigger.refresh(),
           onUpdate: (self) => {
-            const progress = Math.max(0, Math.min(self.progress * 1.1, 0.99))
+            // Ensure animation works in both directions
+            const progress = Math.min(Math.max(self.progress, 0), 0.99)
             const currentIndex = Math.floor(progress * (totalCards - 0.01))
             const isReversing = self.getVelocity() < 0
             
@@ -178,7 +174,7 @@ export default function CardSection() {
 
               gsap.to(cardElements, {
                 x: i => i < currentIndex ? -window.innerWidth : 0,
-                opacity: 1,
+                opacity: i => i < currentIndex ? 0 : 1, // Ensure cards stay visible when scrolling up
                 rotation: i => {
                   if (i < currentIndex) return 8
                   if (i === currentIndex) return 0
