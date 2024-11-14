@@ -139,94 +139,85 @@ export default function CardSection() {
 
     setupCards()
 
-    // Debounce the resize handler
+    let st: ScrollTrigger
+
+    const initScrollTrigger = () => {
+      // Kill existing ScrollTrigger instance if it exists
+      if (st) {
+        st.kill()
+      }
+
+      // Get the container height
+      const containerHeight = window.innerHeight
+      section.style.height = `${containerHeight * 3}px` // Set section height to 3x viewport
+
+      st = ScrollTrigger.create({
+        trigger: section,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          const progress = Math.min(Math.max(self.progress, 0), 0.99)
+          const currentIndex = Math.floor(progress * (totalCards - 0.01))
+
+          if (currentIndex >= 0 && currentIndex < totalCards) {
+            setSelectedCard(cards[currentIndex])
+
+            // Update card positions
+            cardElements.forEach((card, i) => {
+              let zIndex = i === currentIndex 
+                ? totalCards + 1 
+                : i < currentIndex 
+                  ? totalCards + 2 
+                  : totalCards - (i - currentIndex)
+
+              gsap.to(card, {
+                x: i < currentIndex ? -window.innerWidth : 0,
+                rotation: i < currentIndex ? 8 : i === currentIndex ? 0 : -(i - currentIndex) * 8,
+                scale: i < currentIndex ? 0.95 : i === currentIndex ? 1 : 1 - ((i - currentIndex) * 0.05),
+                zIndex: zIndex,
+                duration: 0.2,
+                ease: "none",
+                overwrite: "auto"
+              })
+            })
+          }
+        }
+      })
+
+      // Pin the content wrapper instead of the section
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top top',
+        end: 'bottom bottom',
+        pin: '.card-content-wrapper',
+        pinSpacing: false,
+        invalidateOnRefresh: true
+      })
+    }
+
+    // Debounced resize handler
     let resizeTimeout: NodeJS.Timeout
     const handleResize = () => {
       clearTimeout(resizeTimeout)
       resizeTimeout = setTimeout(() => {
-        ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-        setupCards()
         initScrollTrigger()
-      }, 200) // 200ms debounce
+      }, 100)
     }
 
-    const initScrollTrigger = () => {
-      const vh = window.innerHeight * 0.01
-      document.documentElement.style.setProperty('--vh', `${vh}px`)
-
-      const ctx = gsap.context(() => {
-        ScrollTrigger.create({
-          trigger: section,
-          start: "top top",
-          end: () => `+=${window.innerHeight * 2}`, // Use window.innerHeight instead of section.offsetHeight
-          pin: true,
-          pinSpacing: true,
-          anticipatePin: 1,
-          scrub: 1,
-          fastScrollEnd: true,
-          invalidateOnRefresh: true, // Add this line
-          onUpdate: (self) => {
-            const progress = Math.min(Math.max(self.progress, 0), 0.99)
-            const currentIndex = Math.floor(progress * (totalCards - 0.01))
-
-            if (currentIndex >= 0 && currentIndex < totalCards) {
-              setSelectedCard(cards[currentIndex])
-
-              cardElements.forEach((card, i) => {
-                let zIndex
-                if (i === currentIndex) {
-                  zIndex = totalCards + 1
-                } else if (i < currentIndex) {
-                  zIndex = totalCards + 2
-                } else {
-                  zIndex = totalCards - (i - currentIndex)
-                }
-                gsap.set(card, { zIndex })
-              })
-
-              gsap.to(cardElements, {
-                x: i => i < currentIndex ? -window.innerWidth : 0,
-                rotation: i => {
-                  if (i < currentIndex) return 8
-                  if (i === currentIndex) return 0
-                  return -(i - currentIndex) * 8
-                },
-                scale: i => {
-                  if (i < currentIndex) return 0.95
-                  if (i === currentIndex) return 1
-                  return 1 - ((i - currentIndex) * 0.05)
-                },
-                duration: 0.2,
-                ease: "none",
-                overwrite: true
-              })
-            }
-          }
-        })
-      })
-
-      return () => ctx.revert()
-    }
-
-    // Add visibility change handler
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        ScrollTrigger.refresh()
-      }
-    }
+    initScrollTrigger()
 
     window.addEventListener('resize', handleResize)
     window.addEventListener('orientationchange', handleResize)
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-
-    const cleanup = initScrollTrigger()
 
     return () => {
-      cleanup()
+      if (st) {
+        st.kill()
+      }
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
       window.removeEventListener('resize', handleResize)
       window.removeEventListener('orientationchange', handleResize)
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
       clearTimeout(resizeTimeout)
     }
   }, [])
@@ -437,169 +428,165 @@ export default function CardSection() {
         </div>
       </section>
 
-      {/* Card Animation Section - Update the section styles */}
+      {/* Card Animation Section */}
       <section 
         ref={sectionRef} 
         id="card" 
         className="w-full relative"
-        style={{
-          height: 'calc(var(--vh, 1vh) * 100)',
-          touchAction: 'pan-y',
-          overscrollBehavior: 'contain',
-          willChange: 'transform'
-        }}
       >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="max-w-[1440px] w-full px-4 md:px-8 lg:px-32">
-            <div className="flex flex-col lg:flex-row items-center gap-2 lg:gap-12 pt-[80px] lg:pt-0">
-              {/* Left Side - Card Stack */}
-              <div className="lg:w-1/2 h-[200px] lg:h-[600px] flex items-center justify-center relative">
-                <div ref={cardsRef} className="relative w-[250px] lg:w-[400px] h-[200px] lg:h-[600px] z-20 mx-auto">
-                  {cards.map((card) => (
-                    <div
-                      key={card.id}
-                      className="card-item absolute inset-0 w-full h-full"
-                      style={{
-                        transformOrigin: 'bottom left',
-                        willChange: 'transform',
-                        backfaceVisibility: 'hidden',
-                        perspective: 1000,
-                        WebkitFontSmoothing: 'antialiased',
-                        position: 'absolute'
-                      }}
-                    >
-                      <Image
-                        src={card.image}
-                        alt={`CRDX ${card.name} Card`}
-                        fill
-                        className="object-contain"
-                        priority={card.id === selectedCard.id}
-                        loading="eager"
-                      />
-                    </div>
-                  ))}
+        <div className="card-content-wrapper fixed top-0 left-0 w-full h-screen">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="max-w-[1440px] w-full px-4 md:px-8 lg:px-32">
+              <div className="flex flex-col lg:flex-row items-center gap-2 lg:gap-12 pt-[80px] lg:pt-0">
+                {/* Left Side - Card Stack */}
+                <div className="lg:w-1/2 h-[200px] lg:h-[600px] flex items-center justify-center relative">
+                  <div ref={cardsRef} className="relative w-[250px] lg:w-[400px] h-[200px] lg:h-[600px] z-20 mx-auto">
+                    {cards.map((card) => (
+                      <div
+                        key={card.id}
+                        className="card-item absolute inset-0 w-full h-full"
+                        style={{
+                          transformOrigin: 'bottom left',
+                          willChange: 'transform',
+                          backfaceVisibility: 'hidden',
+                          perspective: 1000,
+                          WebkitFontSmoothing: 'antialiased',
+                          position: 'absolute'
+                        }}
+                      >
+                        <Image
+                          src={card.image}
+                          alt={`CRDX ${card.name} Card`}
+                          fill
+                          className="object-contain"
+                          priority={card.id === selectedCard.id}
+                          loading="eager"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Right Side - Card Info */}
-              <div className="lg:w-1/2 min-h-[300px] h-[calc(60vh-80px)] lg:h-[600px] flex items-start lg:items-center">
-                <motion.div 
-                  className="p-4 pt-5 sm:pt-6 lg:p-8 rounded-3xl w-full z-10 h-full max-w-[90vw] mx-auto flex flex-col"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  key={selectedCard.id}
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(217, 217, 217, 0.37) 0%, rgba(115, 115, 115, 0) 100%)',
-                    backdropFilter: 'blur(75px)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)'
-                  }}
-                >
-                  {/* Fixed Header - Updated padding */}
-                  <div className="mb-4 lg:mb-4 flex-shrink-0 pt-1 sm:pt-2">
-                    <h2 className={`${bebasNeue.className} text-2xl lg:text-4xl text-white mb-2 lg:mb-6`}>
-                      Find the Perfect Credit Card for You
-                    </h2>
-                    <h3 className={`${bebasNeue.className} text-xl lg:text-2xl`}>
-                      <span className="text-[#FFD700]">CRDX</span>
-                      <span className="text-white">{selectedCard.name}</span>
-                    </h3>
-                  </div>
+                {/* Right Side - Card Info */}
+                <div className="lg:w-1/2 min-h-[300px] h-[calc(60vh-80px)] lg:h-[600px] flex items-start lg:items-center">
+                  <motion.div 
+                    className="p-4 pt-5 sm:pt-6 lg:p-8 rounded-3xl w-full z-10 h-full max-w-[90vw] mx-auto flex flex-col"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                    key={selectedCard.id}
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(217, 217, 217, 0.37) 0%, rgba(115, 115, 115, 0) 100%)',
+                      backdropFilter: 'blur(75px)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)'
+                    }}
+                  >
+                    {/* Fixed Header - Updated padding */}
+                    <div className="mb-4 lg:mb-4 flex-shrink-0 pt-1 sm:pt-2">
+                      <h2 className={`${bebasNeue.className} text-2xl lg:text-4xl text-white mb-2 lg:mb-6`}>
+                        Find the Perfect Credit Card for You
+                      </h2>
+                      <h3 className={`${bebasNeue.className} text-xl lg:text-2xl`}>
+                        <span className="text-[#FFD700]">CRDX</span>
+                        <span className="text-white">{selectedCard.name}</span>
+                      </h3>
+                    </div>
 
-                  {/* Desktop Content remains unchanged */}
-                  <div className="hidden lg:block overflow-y-auto pr-6 flex-1">
-                    <motion.ul 
-                      className="space-y-4"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      {selectedCard.features.map((feature, index) => (
-                        <li key={index} className="text-white leading-relaxed">
-                          {feature}
-                        </li>
-                      ))}
-                    </motion.ul>
-                  </div>
+                    {/* Desktop Content remains unchanged */}
+                    <div className="hidden lg:block overflow-y-auto pr-6 flex-1">
+                      <motion.ul 
+                        className="space-y-4"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {selectedCard.features.map((feature, index) => (
+                          <li key={index} className="text-white leading-relaxed">
+                            {feature}
+                          </li>
+                        ))}
+                      </motion.ul>
+                    </div>
 
-                  {/* Mobile Carousel Content */}
-                  <div className="lg:hidden flex-1 flex flex-col" style={{ height: 'calc(100% - 120px)' }}>
-                    <div className="mobile-features-container flex-1 min-h-0">
-                      {isClient && (
-                        <div 
-                          className="h-full overflow-x-scroll hide-scrollbar"
-                          style={{
-                            WebkitOverflowScrolling: 'touch',
-                            scrollSnapType: 'x mandatory',
-                            scrollBehavior: 'smooth'
-                          }}
-                          onScroll={(e) => {
-                            const container = e.currentTarget
-                            const slideWidth = container.clientWidth * 0.85 + 16
-                            const newSlide = Math.round(container.scrollLeft / slideWidth)
-                            if (newSlide !== currentSlide) {
-                              setCurrentSlide(newSlide)
-                            }
-                          }}
-                        >
-                          <div className="flex h-full">
-                            {getFeatureSlides(selectedCard.features).map((slide, slideIndex) => (
-                              <div 
-                                key={slideIndex}
-                                className="flex-none w-[85%] space-y-2 px-1 mr-4"
-                                style={{
-                                  scrollSnapAlign: 'center'
-                                }}
-                              >
-                                {slide.features.map((feature, featureIndex) => (
-                                  <div 
-                                    key={featureIndex}
-                                    className="text-white text-sm sm:text-base leading-relaxed p-3 rounded-xl"
-                                    style={{
-                                      background: 'linear-gradient(135deg, rgba(217, 217, 217, 0.1) 0%, rgba(115, 115, 115, 0) 100%)'
-                                    }}
-                                  >
-                                    {feature}
-                                  </div>
-                                ))}
-                              </div>
-                            ))}
+                    {/* Mobile Carousel Content */}
+                    <div className="lg:hidden flex-1 flex flex-col" style={{ height: 'calc(100% - 120px)' }}>
+                      <div className="mobile-features-container flex-1 min-h-0">
+                        {isClient && (
+                          <div 
+                            className="h-full overflow-x-scroll hide-scrollbar"
+                            style={{
+                              WebkitOverflowScrolling: 'touch',
+                              scrollSnapType: 'x mandatory',
+                              scrollBehavior: 'smooth'
+                            }}
+                            onScroll={(e) => {
+                              const container = e.currentTarget
+                              const slideWidth = container.clientWidth * 0.85 + 16
+                              const newSlide = Math.round(container.scrollLeft / slideWidth)
+                              if (newSlide !== currentSlide) {
+                                setCurrentSlide(newSlide)
+                              }
+                            }}
+                          >
+                            <div className="flex h-full">
+                              {getFeatureSlides(selectedCard.features).map((slide, slideIndex) => (
+                                <div 
+                                  key={slideIndex}
+                                  className="flex-none w-[85%] space-y-2 px-1 mr-4"
+                                  style={{
+                                    scrollSnapAlign: 'center'
+                                  }}
+                                >
+                                  {slide.features.map((feature, featureIndex) => (
+                                    <div 
+                                      key={featureIndex}
+                                      className="text-white text-sm sm:text-base leading-relaxed p-3 rounded-xl"
+                                      style={{
+                                        background: 'linear-gradient(135deg, rgba(217, 217, 217, 0.1) 0%, rgba(115, 115, 115, 0) 100%)'
+                                      }}
+                                    >
+                                      {feature}
+                                    </div>
+                                  ))}
+                                </div>
+                              ))}
+                            </div>
                           </div>
+                        )}
+                      </div>
+
+                      {/* Navigation Dots - Only show on client side */}
+                      {isClient && getFeatureSlides(selectedCard.features).length > 1 && (
+                        <div className="flex-shrink-0 flex justify-center gap-1.5 mt-2">
+                          {getFeatureSlides(selectedCard.features).map((_, index) => (
+                            <button
+                              key={index}
+                              onClick={() => {
+                                const container = document.querySelector('.overflow-x-scroll')
+                                if (container instanceof HTMLElement) {
+                                  const slideWidth = container.clientWidth * 0.85 + 16
+                                  const targetScroll = index * slideWidth
+                                  const maxScroll = container.scrollWidth - container.clientWidth
+                                  
+                                  container.scrollTo({
+                                    left: Math.min(targetScroll, maxScroll),
+                                    behavior: 'smooth'
+                                  })
+                                  setCurrentSlide(index)
+                                }
+                              }}
+                              className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                                currentSlide === index ? 'bg-[#FFD700]' : 'bg-white/30'
+                              }`}
+                            />
+                          ))}
                         </div>
                       )}
                     </div>
-
-                    {/* Navigation Dots - Only show on client side */}
-                    {isClient && getFeatureSlides(selectedCard.features).length > 1 && (
-                      <div className="flex-shrink-0 flex justify-center gap-1.5 mt-2">
-                        {getFeatureSlides(selectedCard.features).map((_, index) => (
-                          <button
-                            key={index}
-                            onClick={() => {
-                              const container = document.querySelector('.overflow-x-scroll')
-                              if (container instanceof HTMLElement) {
-                                const slideWidth = container.clientWidth * 0.85 + 16
-                                const targetScroll = index * slideWidth
-                                const maxScroll = container.scrollWidth - container.clientWidth
-                                
-                                container.scrollTo({
-                                  left: Math.min(targetScroll, maxScroll),
-                                  behavior: 'smooth'
-                                })
-                                setCurrentSlide(index)
-                              }
-                            }}
-                            className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                              currentSlide === index ? 'bg-[#FFD700]' : 'bg-white/30'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
+                  </motion.div>
+                </div>
               </div>
             </div>
           </div>

@@ -29,9 +29,20 @@
 }
 
 html {
-  height: -webkit-fill-available;
+  overflow-x: hidden;
+  height: 100%;
 }
 
 body {
-  min-height: -webkit-fill-available;
+  overflow-x: hidden;
+  height: 100%;
+  position: relative;
+}
+
+.card-content-wrapper {
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
 }
