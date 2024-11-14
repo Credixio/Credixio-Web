@@ -11,7 +11,6 @@ import ScoreSection from '@/components/ScoreSection'
 import DownloadSection from '@/components/DownloadSection'
 import Footer from '@/components/Footer'
 import { useEffect } from 'react'
-import { useViewportHeight } from '@/hooks/useViewportHeight'
 
 const bebasNeue = Bebas_Neue({
   weight: '400',
@@ -20,29 +19,19 @@ const bebasNeue = Bebas_Neue({
 })
 
 export default function Home() {
-  useViewportHeight()
-
   useEffect(() => {
-    // Function to handle Safari's address bar
-    const handleSafariScroll = () => {
-      // Only run on iOS Safari
-      if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
-        // Force layout recalculation
-        document.documentElement.style.height = `${window.innerHeight}px`;
-        window.requestAnimationFrame(() => {
-          document.documentElement.style.height = '';
-        });
-      }
+    const updateVh = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
 
-    window.addEventListener('scroll', handleSafariScroll, { passive: true });
-    window.addEventListener('resize', handleSafariScroll, { passive: true });
-    window.addEventListener('orientationchange', handleSafariScroll);
+    updateVh();
+    window.addEventListener('resize', updateVh);
+    window.addEventListener('orientationchange', updateVh);
 
     return () => {
-      window.removeEventListener('scroll', handleSafariScroll);
-      window.removeEventListener('resize', handleSafariScroll);
-      window.removeEventListener('orientationchange', handleSafariScroll);
+      window.removeEventListener('resize', updateVh);
+      window.removeEventListener('orientationchange', updateVh);
     };
   }, []);
 
@@ -61,7 +50,7 @@ export default function Home() {
         <Navbar />
         
         {/* Desktop Hero */}
-        <div className="hidden lg:flex max-w-[1440px] mx-auto px-4 md:px-8 lg:px-32 min-h-[calc(var(--vh, 1vh) * 100)] items-center">
+        <div className="hidden lg:flex max-w-[1440px] mx-auto px-4 md:px-8 lg:px-32 min-h-screen items-center">
           <div className="flex flex-row gap-0">
             {/* Left Content */}
             <motion.div 
@@ -128,7 +117,7 @@ export default function Home() {
         </div>
 
         {/* Mobile Hero */}
-        <div className="lg:hidden max-w-[1440px] mx-auto px-4 min-h-[calc(var(--vh, 1vh) * 100 - 80px)] flex items-center">
+        <div className="lg:hidden max-w-[1440px] mx-auto px-4 min-h-[calc(100vh-80px)] flex items-center">
           <div className="flex flex-col gap-8 pt-20 w-full">
             {/* Mobile Images */}
             <motion.div 

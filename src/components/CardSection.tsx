@@ -425,7 +425,7 @@ export default function CardSection() {
       <section 
         ref={sectionRef} 
         id="card" 
-        className="w-full relative h-[calc(var(--vh, 1vh) * 100)]"
+        className="w-full relative h-screen"
         style={{
           touchAction: 'pan-y',
           overscrollBehavior: 'contain',
@@ -465,7 +465,7 @@ export default function CardSection() {
               </div>
 
               {/* Right Side - Card Info */}
-              <div className="lg:w-1/2 min-h-[300px] h-[calc(var(--vh, 1vh) * 60 - 80px)] lg:h-[600px] flex items-start lg:items-center">
+              <div className="lg:w-1/2 min-h-[300px] h-[calc(60vh-80px)] lg:h-[600px] flex items-start lg:items-center">
                 <motion.div 
                   className="p-4 pt-5 sm:pt-6 lg:p-8 rounded-3xl w-full z-10 h-full max-w-[90vw] mx-auto flex flex-col"
                   initial={{ opacity: 0, y: 20 }}
