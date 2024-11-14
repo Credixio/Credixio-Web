@@ -59,6 +59,18 @@ export default function Home() {
 
   return (
     <main className="relative min-h-[100dvh] bg-[#1A1E1C] overflow-x-clip">
+      <style jsx global>{`
+        section {
+          transition: height 0.3s ease, min-height 0.3s ease;
+          will-change: height;
+        }
+        
+        .hero-section {
+          transition: min-height 0.3s ease;
+          will-change: min-height;
+        }
+      `}</style>
+
       <Image 
         src="/assets/PageThread.png"
         alt="Background Thread"
@@ -72,7 +84,7 @@ export default function Home() {
         <Navbar />
         
         {/* Desktop Hero */}
-        <div className="hidden lg:flex max-w-[1440px] mx-auto px-4 md:px-8 lg:px-32 min-h-[100dvh] items-center">
+        <div className="hidden lg:flex max-w-[1440px] mx-auto px-4 md:px-8 lg:px-32 min-h-[100dvh] items-center hero-section">
           <div className="flex flex-row gap-0">
             {/* Left Content */}
             <motion.div 
@@ -139,7 +151,7 @@ export default function Home() {
         </div>
 
         {/* Mobile Hero */}
-        <div className="lg:hidden max-w-[1440px] mx-auto px-4 min-h-[calc(100dvh-80px)] flex items-center">
+        <div className="lg:hidden max-w-[1440px] mx-auto px-4 min-h-[calc(100dvh-80px)] flex items-center hero-section">
           <div className="flex flex-col gap-8 pt-20 w-full">
             {/* Mobile Images */}
             <motion.div 
