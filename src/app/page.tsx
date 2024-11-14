@@ -31,57 +31,10 @@ export default function Home() {
     window.addEventListener('resize', updateVh);
     window.addEventListener('orientationchange', updateVh);
 
-    if (typeof window !== 'undefined') {
-      gsap.registerPlugin(ScrollToPlugin);
-      
-      let lastKnownScrollY = window.scrollY;
-      let ticking = false;
-
-      const handleScroll = () => {
-        const currentScrollY = window.scrollY;
-        const direction = currentScrollY > lastKnownScrollY ? "down" : "up";
-        lastKnownScrollY = currentScrollY;
-
-        if (!ticking) {
-          window.requestAnimationFrame(() => {
-            const sections = document.querySelectorAll("section");
-            sections.forEach(section => {
-              const rect = section.getBoundingClientRect();
-              if (direction === "down" && 
-                  rect.top <= window.innerHeight / 2 && 
-                  rect.bottom > window.innerHeight / 2) {
-                gsap.to(window, { 
-                  duration: 0.3, 
-                  scrollTo: section.offsetTop, 
-                  ease: "power2.out",
-                  overwrite: true
-                });
-              }
-              if (direction === "up" && 
-                  rect.bottom >= window.innerHeight / 2 && 
-                  rect.top < window.innerHeight / 2) {
-                gsap.to(window, { 
-                  duration: 0.3, 
-                  scrollTo: section.offsetTop, 
-                  ease: "power2.out",
-                  overwrite: true
-                });
-              }
-            });
-            ticking = false;
-          });
-          ticking = true;
-        }
-      };
-
-      window.addEventListener("scroll", handleScroll, { passive: true });
-
-      return () => {
-        window.removeEventListener('resize', updateVh);
-        window.removeEventListener('orientationchange', updateVh);
-        window.removeEventListener('scroll', handleScroll);
-      };
-    }
+    return () => {
+      window.removeEventListener('resize', updateVh);
+      window.removeEventListener('orientationchange', updateVh);
+    };
   }, []);
 
   return (
