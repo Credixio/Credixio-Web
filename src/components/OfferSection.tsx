@@ -207,67 +207,69 @@ export default function OfferSection() {
     setSelectedOffer(offerItems[nextIndex])
   }
 
-  const renderContent = (content: OfferItem['content'], item: OfferItem) => (
-    <div className="space-y-6">
-      {content.subheading1 && (
-        <h4 className={`${bebasNeue.className} text-[#FFD700] text-xl`}>
-          {content.subheading1}
-        </h4>
-      )}
-      
-      {content.body1 && (
-        <p className="text-white text-base leading-relaxed">
-          {content.body1}
-        </p>
-      )}
+  const renderContent = (content: OfferItem['content'], item: OfferItem) => {
+    return (
+      <div className="space-y-6 relative">
+        {content.subheading1 && (
+          <h4 className={`${bebasNeue.className} text-[#FFD700] text-xl`}>
+            {content.subheading1}
+          </h4>
+        )}
+        
+        {content.body1 && (
+          <p className="text-white text-base leading-relaxed">
+            {content.body1}
+          </p>
+        )}
 
-      {/* Grid items section */}
-      {item.id === 4 && item.gridItems && (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 h-[calc(100%-4rem)]">
-          {item.gridItems.map((gridItem, index) => (
-            <motion.div 
-              key={index} 
-              className="flex flex-col items-center text-center justify-center bg-[rgba(217,217,217,0.1)] rounded-2xl p-4 h-full min-h-[180px]"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <div className="relative w-16 h-16 mb-3">
-                <Image
-                  src={gridItem.icon}
-                  alt={gridItem.text}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <span className={`${bebasNeue.className} text-white text-lg`}>
-                {gridItem.text}
-              </span>
-            </motion.div>
-          ))}
-        </div>
-      )}
+        {/* Grid items section */}
+        {item.id === 4 && item.gridItems && (
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 h-[calc(100%-4rem)]">
+            {item.gridItems.map((gridItem, index) => (
+              <motion.div 
+                key={index} 
+                className="flex flex-col items-center text-center justify-center bg-[rgba(217,217,217,0.1)] rounded-2xl p-4 h-full min-h-[180px]"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <div className="relative w-16 h-16 mb-3">
+                  <Image
+                    src={gridItem.icon}
+                    alt={gridItem.text}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <span className={`${bebasNeue.className} text-white text-lg`}>
+                  {gridItem.text}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
-      {content.subheading2 && item.id !== 4 && (
-        <h4 className={`${bebasNeue.className} text-[#FFD700] text-xl`}>
-          {content.subheading2}
-        </h4>
-      )}
+        {content.subheading2 && item.id !== 4 && (
+          <h4 className={`${bebasNeue.className} text-[#FFD700] text-xl`}>
+            {content.subheading2}
+          </h4>
+        )}
 
-      {content.benefits.length > 0 && (
-        <ul className="text-white text-base leading-relaxed list-disc pl-6 space-y-2">
-          {content.benefits.map((benefit, index) => (
-            <li key={index}>{benefit}</li>
-          ))}
-        </ul>
-      )}
+        {content.benefits.length > 0 && (
+          <ul className="text-white text-base leading-relaxed list-disc pl-6 space-y-2">
+            {content.benefits.map((benefit, index) => (
+              <li key={index}>{benefit}</li>
+            ))}
+          </ul>
+        )}
 
-      {content.body2 && (
-        <p className="text-white text-base leading-relaxed">
-          {content.body2}
-        </p>
-      )}
-    </div>
-  )
+        {content.body2 && (
+          <p className="text-white text-base leading-relaxed">
+            {content.body2}
+          </p>
+        )}
+      </div>
+    )
+  }
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget
@@ -417,9 +419,18 @@ export default function OfferSection() {
               
               <div className="flex gap-8 h-[calc(100%-80px)]">
                 {/* Left side - Text Content */}
-                <div className={`${selectedOffer.id === 4 ? 'w-full' : 'w-1/2'}`}>
+                <div className={`${selectedOffer.id === 4 ? 'w-full' : 'w-1/2'} relative`}>
                   <div 
-                    className={`${selectedOffer.id === 4 ? 'h-full' : 'overflow-y-auto pr-4'} h-full`}
+                    className={`${selectedOffer.id === 4 ? 'h-full' : 'overflow-y-auto pr-4'} h-full relative`}
+                    onScroll={(e) => {
+                      const target = e.currentTarget
+                      setScrolledCards(prev => {
+                        if (!prev.includes(selectedOffer.id)) {
+                          return [...prev, selectedOffer.id]
+                        }
+                        return prev
+                      })
+                    }}
                     style={{ 
                       scrollbarWidth: 'thin',
                       scrollbarColor: '#4A4A4A transparent',
@@ -439,6 +450,36 @@ export default function OfferSection() {
                       }
                     `}</style>
                     {renderContent(selectedOffer.content, selectedOffer)}
+
+                    {/* Desktop Scroll Indicator */}
+                    {!scrolledCards.includes(selectedOffer.id) && 
+                     selectedOffer.id !== 4 && (
+                      <div 
+                        ref={(el) => {
+                          if (el) {
+                            const contentDiv = el.parentElement;
+                            const isScrollable = contentDiv && 
+                              contentDiv.scrollHeight > contentDiv.clientHeight;
+                            
+                            el.style.display = isScrollable ? 'flex' : 'none';
+                          }
+                        }}
+                        className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-[#FFD700] items-center justify-center z-50"
+                      >
+                        <svg 
+                          width="16" 
+                          height="16" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="#000000"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -494,7 +535,6 @@ export default function OfferSection() {
                     <div className="flex-1 overflow-y-auto pr-2 relative"
                       onScroll={(e) => {
                         const target = e.currentTarget
-                        // Mark this card as scrolled using array
                         setScrolledCards(prev => {
                           if (!prev.includes(item.id)) {
                             return [...prev, item.id]
@@ -505,19 +545,19 @@ export default function OfferSection() {
                     >
                       {renderContent(item.content, item)}
                       
-                      {/* Updated Scroll Indicator - check array instead of Set */}
-                      {item.content.benefits.length > 2 && !scrolledCards.includes(item.id) && (
-                        <motion.div 
-                          className="absolute bottom-4 right-4 w-8 h-8 rounded-full bg-[#FFD700] flex items-center justify-center"
-                          animate={{ 
-                            y: [0, 4, 0],
-                            opacity: [1, 0.7, 1]
+                      {/* Mobile Scroll Indicator */}
+                      {!scrolledCards.includes(item.id) && (
+                        <div 
+                          ref={(el) => {
+                            if (el) {
+                              const contentDiv = el.parentElement;
+                              const isScrollable = contentDiv && 
+                                contentDiv.scrollHeight > contentDiv.clientHeight;
+                              
+                              el.style.display = isScrollable ? 'flex' : 'none';
+                            }
                           }}
-                          transition={{ 
-                            duration: 1.5,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }}
+                          className="fixed bottom-20 right-8 w-8 h-8 rounded-full bg-[#FFD700] flex items-center justify-center z-50"
                         >
                           <svg 
                             width="16" 
@@ -531,7 +571,7 @@ export default function OfferSection() {
                           >
                             <path d="M6 9l6 6 6-6"/>
                           </svg>
-                        </motion.div>
+                        </div>
                       )}
                     </div>
                   </div>
