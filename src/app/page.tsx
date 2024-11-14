@@ -20,59 +20,31 @@ const bebasNeue = Bebas_Neue({
 
 export default function Home() {
   useEffect(() => {
-    // Initial calculation
-    const calculateVh = () => {
-      // Get the viewport height
-      const vh = window.innerHeight;
-      // Get the maximum viewport height (without Safari UI)
-      const maxVh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-      
-      // Set both values as CSS variables
-      document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
-      document.documentElement.style.setProperty('--max-vh', `${maxVh * 0.01}px`);
+    const updateVh = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
 
-    // Calculate on mount
-    calculateVh();
-
-    // Add event listeners with debounce
-    let timeoutId: NodeJS.Timeout;
-    const handleResize = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(calculateVh, 100);
-    };
-
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('orientationchange', handleResize);
-    // Add scroll event listener to handle Safari UI changes
-    window.addEventListener('scroll', handleResize, { passive: true });
+    updateVh();
+    window.addEventListener('resize', updateVh);
+    window.addEventListener('orientationchange', updateVh);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', handleResize);
-      window.removeEventListener('scroll', handleResize);
-      clearTimeout(timeoutId);
+      window.removeEventListener('resize', updateVh);
+      window.removeEventListener('orientationchange', updateVh);
     };
   }, []);
 
   return (
-    <main 
-      className="relative bg-[#1A1E1C] overflow-x-clip"
-      style={{ 
-        minHeight: 'calc(var(--max-vh, 1vh) * 100)',
-        height: 'calc(var(--vh, 1vh) * 100)'
-      }}
-    >
-      <div className="absolute inset-0">
-        <Image 
-          src="/assets/PageThread.png"
-          alt="Background Thread"
-          fill
-          className="object-cover object-top opacity-50"
-          style={{ transform: 'scale(1)', transformOrigin: 'top' }}
-          priority
-        />
-      </div>
+    <main className="relative min-h-screen bg-[#1A1E1C]">
+      <Image 
+        src="/assets/PageThread.png"
+        alt="Background Thread"
+        fill
+        className="object-cover object-top opacity-50 fixed"
+        style={{ transform: 'scale(1)', transformOrigin: 'top' }}
+        priority
+      />
       
       <div className="relative">
         <Navbar />
@@ -220,15 +192,8 @@ export default function Home() {
           <div className="relative" style={{ zIndex: 1 }}>
             <ScoreSection />
             <OfferSection />
-            <div className="relative" style={{ 
-              WebkitTransform: 'translate3d(0,0,0)',
-              transform: 'translate3d(0,0,0)',
-              WebkitBackfaceVisibility: 'hidden',
-              backfaceVisibility: 'hidden'
-            }}>
-              <DownloadSection />
-              <Footer />
-            </div>
+            <DownloadSection />
+            <Footer />
           </div>
         </div>
       </div>
