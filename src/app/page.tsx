@@ -171,10 +171,10 @@ export default function Home() {
         {/* Main Content Sections */}
         <div className="relative">
           <VideoSection />
-          <div className="relative">
+          <div className="relative" style={{ zIndex: 2 }}>
             <CardSection />
           </div>
-          <div className="relative">
+          <div className="relative" style={{ zIndex: 1, transform: 'translate3d(0,0,0)' }}>
             <ScoreSection />
             <OfferSection />
             <DownloadSection />

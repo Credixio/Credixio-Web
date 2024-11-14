@@ -167,7 +167,7 @@ export default function CardSection() {
                 gsap.set(card, {
                   zIndex: isReversing ? 
                     (i >= currentIndex ? totalCards + (totalCards - i) : i) :
-                    (i <= currentIndex ? totalCards - (currentIndex - i) : totalCards - (i - currentIndex))
+                    (i <= currentIndex ? totalCards - i : totalCards - (totalCards - i))
                 })
               })
 
