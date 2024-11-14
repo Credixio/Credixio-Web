@@ -152,15 +152,23 @@ export default function CardSection() {
           start: "top top",
           end: () => `+=${section.offsetHeight * 2}`,
           pin: true,
-          pinSpacing: false,
+          pinSpacing: true,
           anticipatePin: 1,
           scrub: 1,
-          fastScrollEnd: true,
           onEnter: () => {
             ScrollTrigger.refresh();
           },
           onLeave: () => {
             ScrollTrigger.refresh();
+            if (section) {
+              section.style.visibility = 'hidden';
+            }
+          },
+          onEnterBack: () => {
+            ScrollTrigger.refresh();
+            if (section) {
+              section.style.visibility = 'visible';
+            }
           },
           onUpdate: (self) => {
             const progress = Math.min(Math.max(self.progress, 0), 0.99)
@@ -426,7 +434,7 @@ export default function CardSection() {
       <section 
         ref={sectionRef} 
         id="card" 
-        className="w-full relative h-screen z-10"
+        className="w-full relative h-screen"
         style={{
           touchAction: 'pan-y',
           overscrollBehavior: 'contain',

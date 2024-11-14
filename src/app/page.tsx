@@ -171,14 +171,10 @@ export default function Home() {
         {/* Main Content Sections */}
         <div className="relative">
           <VideoSection />
-          
-          {/* Card Section with its own stacking context */}
-          <div className="relative" style={{ zIndex: 2 }}>
+          <div className="relative">
             <CardSection />
           </div>
-          
-          {/* Other sections in their own stacking context */}
-          <div className="relative" style={{ zIndex: 1 }}>
+          <div className="relative">
             <ScoreSection />
             <OfferSection />
             <DownloadSection />
