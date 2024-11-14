@@ -117,17 +117,17 @@ export default function Home() {
         </div>
 
         {/* Mobile Hero */}
-        <div className="lg:hidden max-w-[1440px] mx-auto px-4 min-h-[calc(100vh-80px)] flex items-center">
+        <div className="lg:hidden max-w-[1440px] mx-auto px-4 min-h-[calc(100vh-80px)] flex items-center overflow-x-hidden">
           <div className="flex flex-col gap-8 pt-20 w-full">
             {/* Mobile Images */}
             <motion.div 
-              className="relative w-full h-[260px]"
+              className="relative w-full h-[260px] overflow-visible"
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
             >
-              {/* Background Blur */}
-              <div className="absolute right-[-20%] top-1/2 -translate-y-1/2 w-[100%] h-[200px] bg-[#979797] blur-[800px]" />
+              {/* Background Blur - Contained within viewport */}
+              <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-[100%] h-[200px] bg-[#979797] blur-[800px]" />
               
               {/* Phone */}
               <motion.div
@@ -149,7 +149,7 @@ export default function Home() {
 
               {/* Card */}
               <motion.div
-                className="absolute left-[10%] -translate-x-1/2 top-[40px] z-20 w-[250px]"
+                className="absolute left-1/2 -translate-x-[60%] top-[40px] z-20 w-[250px]"
                 initial={{ y: -20 }}
                 animate={{ y: 0 }}
                 transition={{ duration: 8, repeat: Infinity, repeatType: "reverse", delay: 0.5 }}
