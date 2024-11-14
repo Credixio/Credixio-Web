@@ -174,10 +174,12 @@ export default function Home() {
           <div className="relative" style={{ zIndex: 2 }}>
             <CardSection />
           </div>
-          <div className="relative" style={{ zIndex: 1, transform: 'translate3d(0,0,0)' }}>
+          <div className="relative" style={{ zIndex: 0 }}>
             <ScoreSection />
             <OfferSection />
-            <DownloadSection />
+            <div className="relative" style={{ zIndex: 1 }}>
+              <DownloadSection />
+            </div>
             <Footer />
           </div>
         </div>
