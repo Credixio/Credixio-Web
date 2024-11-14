@@ -192,7 +192,8 @@ export default function Home() {
           <div className="relative" style={{ zIndex: 1 }}>
             <ScoreSection />
             <OfferSection />
-            <DownloadSection />
+            {/* Temporarily comment out DownloadSection */}
+            {/* <DownloadSection /> */}
             <Footer />
           </div>
         </div>
