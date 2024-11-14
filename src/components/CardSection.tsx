@@ -153,8 +153,28 @@ export default function CardSection() {
           end: () => `+=${section.offsetHeight * 2}`,
           pin: true,
           pinSpacing: true,
+          pinReparent: true,
           anticipatePin: 1,
           scrub: 1,
+          fastScrollEnd: true,
+          onEnter: () => {
+            if (section) {
+              section.style.transform = 'translateZ(0)'
+              section.offsetHeight
+            }
+          },
+          onLeave: () => {
+            if (section) {
+              section.style.visibility = 'hidden'
+            }
+          },
+          onEnterBack: () => {
+            if (section) {
+              section.style.visibility = 'visible'
+              section.style.transform = 'translateZ(0)'
+              section.offsetHeight
+            }
+          },
           onUpdate: (self) => {
             const progress = Math.min(Math.max(self.progress, 0), 0.99)
             const currentIndex = Math.floor(progress * (totalCards - 0.01))
@@ -465,7 +485,7 @@ export default function CardSection() {
               </div>
 
               {/* Right Side - Card Info */}
-              <div className="lg:w-1/2 min-h-[500px] h-auto lg:h-[600px] flex items-start lg:items-center">
+              <div className="lg:w-1/2 min-h-[300px] h-[calc(60vh-80px)] lg:h-[600px] flex items-start lg:items-center">
                 <motion.div 
                   className="p-4 pt-5 sm:pt-6 lg:p-8 rounded-3xl w-full z-10 h-full max-w-[90vw] mx-auto flex flex-col"
                   initial={{ opacity: 0, y: 20 }}
