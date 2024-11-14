@@ -17,39 +17,3 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
 }
-
-/* Add these styles at the end of your globals.css */
-@supports (-webkit-touch-callout: none) {
-  .h-screen {
-    height: -webkit-fill-available;
-  }
-  section {
-    min-height: -webkit-fill-available;
-  }
-}
-
-html {
-  overflow-x: hidden;
-  height: 100%;
-}
-
-body {
-  overflow-x: hidden;
-  height: 100%;
-  position: relative;
-}
-
-.card-content-wrapper {
-  transform: translate3d(0, 0, 0);
-  -webkit-transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  will-change: transform;
-  position: absolute;
-  z-index: 1;
-}
-
-#card {
-  position: relative;
-  z-index: 1;
-}

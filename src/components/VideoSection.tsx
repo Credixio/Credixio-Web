@@ -16,11 +16,23 @@ export default function VideoSection() {
     let timeoutId: NodeJS.Timeout
     const handleResize = () => {
       clearTimeout(timeoutId)
-      timeoutId = setTimeout(checkMobile, 100)
+      timeoutId = setTimeout(() => {
+        checkMobile()
+        // Force a reflow of the section
+        if (sectionRef.current) {
+          sectionRef.current.style.display = 'none'
+          void sectionRef.current.offsetHeight // Force reflow
+          sectionRef.current.style.display = ''
+        }
+      }, 100)
     }
+
     window.addEventListener('resize', handleResize)
+    window.addEventListener('orientationchange', handleResize)
+
     return () => {
       window.removeEventListener('resize', handleResize)
+      window.removeEventListener('orientationchange', handleResize)
       clearTimeout(timeoutId)
     }
   }, [])

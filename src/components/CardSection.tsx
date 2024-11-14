@@ -139,85 +139,82 @@ export default function CardSection() {
 
     setupCards()
 
-    let st: ScrollTrigger
+    const handleResize = () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+      setupCards()
+      initScrollTrigger()
+    }
 
     const initScrollTrigger = () => {
-      // Kill existing ScrollTrigger instance if it exists
-      if (st) {
-        st.kill()
-      }
+      const ctx = gsap.context(() => {
+        ScrollTrigger.create({
+          trigger: section,
+          start: "top top",
+          end: () => `+=${section.offsetHeight * 2}`,
+          pin: true,
+          pinSpacing: true,
+          anticipatePin: 1,
+          scrub: 1,
+          fastScrollEnd: true,
+          onUpdate: (self) => {
+            const progress = Math.min(Math.max(self.progress, 0), 0.99)
+            const currentIndex = Math.floor(progress * (totalCards - 0.01))
 
-      // Get the container height
-      const containerHeight = window.innerHeight
-      section.style.height = `${containerHeight * 3}px` // Set section height to 3x viewport
+            if (currentIndex >= 0 && currentIndex < totalCards) {
+              setSelectedCard(cards[currentIndex])
 
-      st = ScrollTrigger.create({
-        trigger: section,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 1,
-        invalidateOnRefresh: true,
-        onUpdate: (self) => {
-          const progress = Math.min(Math.max(self.progress, 0), 0.99)
-          const currentIndex = Math.floor(progress * (totalCards - 0.01))
+              cardElements.forEach((card, i) => {
+                let zIndex
+                if (i === currentIndex) {
+                  zIndex = totalCards + 1
+                } else if (i < currentIndex) {
+                  zIndex = totalCards + 2
+                } else {
+                  zIndex = totalCards - (i - currentIndex)
+                }
+                gsap.set(card, { zIndex })
+              })
 
-          if (currentIndex >= 0 && currentIndex < totalCards) {
-            setSelectedCard(cards[currentIndex])
-
-            // Update card positions
-            cardElements.forEach((card, i) => {
-              let zIndex = i === currentIndex 
-                ? totalCards + 1 
-                : i < currentIndex 
-                  ? totalCards + 2 
-                  : totalCards - (i - currentIndex)
-
-              gsap.to(card, {
-                x: i < currentIndex ? -window.innerWidth : 0,
-                rotation: i < currentIndex ? 8 : i === currentIndex ? 0 : -(i - currentIndex) * 8,
-                scale: i < currentIndex ? 0.95 : i === currentIndex ? 1 : 1 - ((i - currentIndex) * 0.05),
-                zIndex: zIndex,
+              gsap.to(cardElements, {
+                x: i => i < currentIndex ? -window.innerWidth : 0,
+                rotation: i => {
+                  if (i < currentIndex) return 8
+                  if (i === currentIndex) return 0
+                  return -(i - currentIndex) * 8
+                },
+                scale: i => {
+                  if (i < currentIndex) return 0.95
+                  if (i === currentIndex) return 1
+                  return 1 - ((i - currentIndex) * 0.05)
+                },
                 duration: 0.2,
                 ease: "none",
-                overwrite: "auto"
+                overwrite: true
               })
-            })
+            }
           }
-        }
+        })
       })
 
-      // Pin the content wrapper instead of the section
-      ScrollTrigger.create({
-        trigger: section,
-        start: 'top top',
-        end: 'bottom bottom',
-        pin: '.card-content-wrapper',
-        pinSpacing: false,
-        invalidateOnRefresh: true
-      })
+      return () => ctx.revert()
     }
 
-    // Debounced resize handler
     let resizeTimeout: NodeJS.Timeout
-    const handleResize = () => {
+    const debouncedResize = () => {
       clearTimeout(resizeTimeout)
-      resizeTimeout = setTimeout(() => {
-        initScrollTrigger()
-      }, 100)
+      resizeTimeout = setTimeout(handleResize, 100)
     }
 
-    initScrollTrigger()
+    window.addEventListener('resize', debouncedResize)
+    window.addEventListener('orientationchange', debouncedResize)
 
-    window.addEventListener('resize', handleResize)
-    window.addEventListener('orientationchange', handleResize)
+    const cleanup = initScrollTrigger()
 
     return () => {
-      if (st) {
-        st.kill()
-      }
+      cleanup()
+      window.removeEventListener('resize', debouncedResize)
+      window.removeEventListener('orientationchange', debouncedResize)
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-      window.removeEventListener('resize', handleResize)
-      window.removeEventListener('orientationchange', handleResize)
       clearTimeout(resizeTimeout)
     }
   }, [])
