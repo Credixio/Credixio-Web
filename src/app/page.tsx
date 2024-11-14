@@ -36,7 +36,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="relative min-h-screen bg-[#1A1E1C]">
+    <main className="relative min-h-screen bg-[#1A1E1C] overflow-x-clip">
       <Image 
         src="/assets/PageThread.png"
         alt="Background Thread"
@@ -192,8 +192,7 @@ export default function Home() {
           <div className="relative" style={{ zIndex: 1 }}>
             <ScoreSection />
             <OfferSection />
-            {/* Temporarily comment out DownloadSection */}
-            {/* <DownloadSection /> */}
+            <DownloadSection />
             <Footer />
           </div>
         </div>
