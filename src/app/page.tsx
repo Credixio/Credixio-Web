@@ -169,18 +169,19 @@ export default function Home() {
         </div>
 
         {/* Main Content Sections */}
-        <div className="relative">
+        <div className="relative scroll-smooth" style={{ 
+          scrollSnapType: 'y mandatory',
+          WebkitOverflowScrolling: 'touch'
+        }}>
           <VideoSection />
-          <div className="relative" style={{ zIndex: 2 }}>
+          <div className="relative" style={{ 
+            zIndex: 2,
+            scrollSnapAlign: 'start',
+            scrollSnapStop: 'always'
+          }}>
             <CardSection />
           </div>
-          <div className="relative" style={{ 
-            zIndex: 1,
-            position: 'relative',
-            contain: 'paint layout',
-            WebkitOverflowScrolling: 'touch',
-            overscrollBehavior: 'none'
-          }}>
+          <div className="relative" style={{ zIndex: 1 }}>
             <ScoreSection />
             <OfferSection />
             <DownloadSection />
