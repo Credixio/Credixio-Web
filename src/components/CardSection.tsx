@@ -434,7 +434,7 @@ export default function CardSection() {
         id="card" 
         className="w-full relative"
       >
-        <div className="card-content-wrapper fixed top-0 left-0 w-full h-screen">
+        <div className="card-content-wrapper absolute top-0 left-0 w-full h-screen">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="max-w-[1440px] w-full px-4 md:px-8 lg:px-32">
               <div className="flex flex-col lg:flex-row items-center gap-2 lg:gap-12 pt-[80px] lg:pt-0">

@@ -45,4 +45,11 @@ body {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   will-change: transform;
+  position: absolute;
+  z-index: 1;
+}
+
+#card {
+  position: relative;
+  z-index: 1;
 }
