@@ -27,6 +27,25 @@ export default function Home() {
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
 
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    document.documentElement.style.setProperty('--app-prefers-reduced-motion', 'no-preference');
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @media (prefers-reduced-motion: reduce) {
+        *, ::before, ::after {
+          animation-delay: -1ms !important;
+          animation-duration: 1ms !important;
+          animation-iteration-count: 1 !important;
+          background-attachment: initial !important;
+          scroll-behavior: auto !important;
+          transition-duration: 0s !important;
+          transition-delay: 0s !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
     updateVh();
     window.addEventListener('resize', updateVh);
     window.addEventListener('orientationchange', updateVh);
@@ -34,6 +53,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('resize', updateVh);
       window.removeEventListener('orientationchange', updateVh);
+      document.head.removeChild(style);
     };
   }, []);
 
