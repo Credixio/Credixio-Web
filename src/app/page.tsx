@@ -20,23 +20,49 @@ const bebasNeue = Bebas_Neue({
 
 export default function Home() {
   useEffect(() => {
-    const updateVh = () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    // Initial calculation
+    const calculateVh = () => {
+      // Get the viewport height
+      const vh = window.innerHeight;
+      // Get the maximum viewport height (without Safari UI)
+      const maxVh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+      
+      // Set both values as CSS variables
+      document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
+      document.documentElement.style.setProperty('--max-vh', `${maxVh * 0.01}px`);
     };
 
-    updateVh();
-    window.addEventListener('resize', updateVh);
-    window.addEventListener('orientationchange', updateVh);
+    // Calculate on mount
+    calculateVh();
+
+    // Add event listeners with debounce
+    let timeoutId: NodeJS.Timeout;
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(calculateVh, 100);
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    // Add scroll event listener to handle Safari UI changes
+    window.addEventListener('scroll', handleResize, { passive: true });
 
     return () => {
-      window.removeEventListener('resize', updateVh);
-      window.removeEventListener('orientationchange', updateVh);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+      window.removeEventListener('scroll', handleResize);
+      clearTimeout(timeoutId);
     };
   }, []);
 
   return (
-    <main className="relative min-h-screen bg-[#1A1E1C] overflow-x-clip">
+    <main 
+      className="relative bg-[#1A1E1C] overflow-x-clip"
+      style={{ 
+        minHeight: 'calc(var(--max-vh, 1vh) * 100)',
+        height: 'calc(var(--vh, 1vh) * 100)'
+      }}
+    >
       <div className="absolute inset-0">
         <Image 
           src="/assets/PageThread.png"
