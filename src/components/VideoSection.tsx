@@ -2,11 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform, easeInOut } from 'framer-motion'
+import { useViewportHeight } from '@/hooks/useViewportHeight'
 
 export default function VideoSection() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const [isMobile, setIsMobile] = useState(false)
   
+  useViewportHeight()
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024)
@@ -42,10 +45,10 @@ export default function VideoSection() {
   return (
     <section 
       ref={sectionRef}
-      className="relative h-[calc(100vh-80px)] lg:-mt-32 mt-25"
+      className="relative h-[calc(var(--vh, 1vh) * 100 - 80px)] lg:-mt-32 mt-25"
     >
       <motion.div 
-        className="sticky top-0 w-full h-[calc(100vh-80px)] flex items-center justify-center will-change-transform"
+        className="sticky top-0 w-full h-[calc(var(--vh, 1vh) * 100 - 80px)] flex items-center justify-center will-change-transform"
       >
         <motion.div
           className="relative w-full h-full will-change-transform"
