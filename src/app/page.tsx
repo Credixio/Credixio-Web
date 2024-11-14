@@ -169,25 +169,17 @@ export default function Home() {
         </div>
 
         {/* Main Content Sections */}
-        <div className="relative" style={{ 
-          transformStyle: 'preserve-3d',
-          perspective: '1000px',
-          WebkitPerspective: '1000px'
-        }}>
+        <div className="relative">
           <VideoSection />
-          <div className="relative" style={{ 
-            zIndex: 2,
-            transform: 'translateZ(0)',
-            WebkitTransform: 'translateZ(0)'
-          }}>
+          <div className="relative" style={{ zIndex: 2 }}>
             <CardSection />
           </div>
           <div className="relative" style={{ 
             zIndex: 1,
-            transform: 'translateZ(0)',
-            WebkitTransform: 'translateZ(0)',
-            backfaceVisibility: 'hidden',
-            WebkitBackfaceVisibility: 'hidden'
+            position: 'relative',
+            contain: 'paint layout',
+            WebkitOverflowScrolling: 'touch',
+            overscrollBehavior: 'none'
           }}>
             <ScoreSection />
             <OfferSection />
