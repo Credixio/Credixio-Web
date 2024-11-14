@@ -10,6 +10,7 @@ import CardSection from '@/components/CardSection'
 import ScoreSection from '@/components/ScoreSection'
 import DownloadSection from '@/components/DownloadSection'
 import Footer from '@/components/Footer'
+import { useEffect } from 'react'
 
 const bebasNeue = Bebas_Neue({
   weight: '400',
@@ -18,6 +19,22 @@ const bebasNeue = Bebas_Neue({
 })
 
 export default function Home() {
+  useEffect(() => {
+    const updateVh = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    updateVh();
+    window.addEventListener('resize', updateVh);
+    window.addEventListener('orientationchange', updateVh);
+
+    return () => {
+      window.removeEventListener('resize', updateVh);
+      window.removeEventListener('orientationchange', updateVh);
+    };
+  }, []);
+
   return (
     <main className="relative min-h-screen bg-[#1A1E1C] overflow-x-clip">
       <div className="absolute inset-0">
@@ -169,23 +186,23 @@ export default function Home() {
         </div>
 
         {/* Main Content Sections */}
-        <div className="relative scroll-smooth" style={{ 
-          scrollSnapType: 'y mandatory',
-          WebkitOverflowScrolling: 'touch'
-        }}>
+        <div className="relative">
           <VideoSection />
-          <div className="relative" style={{ 
-            zIndex: 2,
-            scrollSnapAlign: 'start',
-            scrollSnapStop: 'always'
-          }}>
+          <div className="relative" style={{ zIndex: 2 }}>
             <CardSection />
           </div>
           <div className="relative" style={{ zIndex: 1 }}>
             <ScoreSection />
             <OfferSection />
-            <DownloadSection />
-            <Footer />
+            <div className="relative" style={{ 
+              WebkitTransform: 'translate3d(0,0,0)',
+              transform: 'translate3d(0,0,0)',
+              WebkitBackfaceVisibility: 'hidden',
+              backfaceVisibility: 'hidden'
+            }}>
+              <DownloadSection />
+              <Footer />
+            </div>
           </div>
         </div>
       </div>
