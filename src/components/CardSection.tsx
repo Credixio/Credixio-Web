@@ -139,23 +139,32 @@ export default function CardSection() {
 
     setupCards()
 
+    // Debounce the resize handler
+    let resizeTimeout: NodeJS.Timeout
     const handleResize = () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-      setupCards()
-      initScrollTrigger()
+      clearTimeout(resizeTimeout)
+      resizeTimeout = setTimeout(() => {
+        ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+        setupCards()
+        initScrollTrigger()
+      }, 200) // 200ms debounce
     }
 
     const initScrollTrigger = () => {
+      const vh = window.innerHeight * 0.01
+      document.documentElement.style.setProperty('--vh', `${vh}px`)
+
       const ctx = gsap.context(() => {
         ScrollTrigger.create({
           trigger: section,
           start: "top top",
-          end: () => `+=${section.offsetHeight * 2}`,
+          end: () => `+=${window.innerHeight * 2}`, // Use window.innerHeight instead of section.offsetHeight
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,
           scrub: 1,
           fastScrollEnd: true,
+          invalidateOnRefresh: true, // Add this line
           onUpdate: (self) => {
             const progress = Math.min(Math.max(self.progress, 0), 0.99)
             const currentIndex = Math.floor(progress * (totalCards - 0.01))
@@ -163,17 +172,13 @@ export default function CardSection() {
             if (currentIndex >= 0 && currentIndex < totalCards) {
               setSelectedCard(cards[currentIndex])
 
-              // Updated z-index calculation to keep moving card on top
               cardElements.forEach((card, i) => {
                 let zIndex
                 if (i === currentIndex) {
-                  // Current card is always on top
                   zIndex = totalCards + 1
                 } else if (i < currentIndex) {
-                  // Cards that have moved out
-                  zIndex = totalCards + 2 // Even higher z-index for moving cards
+                  zIndex = totalCards + 2
                 } else {
-                  // Cards in the stack
                   zIndex = totalCards - (i - currentIndex)
                 }
                 gsap.set(card, { zIndex })
@@ -203,8 +208,16 @@ export default function CardSection() {
       return () => ctx.revert()
     }
 
+    // Add visibility change handler
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        ScrollTrigger.refresh()
+      }
+    }
+
     window.addEventListener('resize', handleResize)
     window.addEventListener('orientationchange', handleResize)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
 
     const cleanup = initScrollTrigger()
 
@@ -212,7 +225,9 @@ export default function CardSection() {
       cleanup()
       window.removeEventListener('resize', handleResize)
       window.removeEventListener('orientationchange', handleResize)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+      clearTimeout(resizeTimeout)
     }
   }, [])
 
@@ -422,12 +437,13 @@ export default function CardSection() {
         </div>
       </section>
 
-      {/* Card Animation Section */}
+      {/* Card Animation Section - Update the section styles */}
       <section 
         ref={sectionRef} 
         id="card" 
-        className="w-full relative h-screen"
+        className="w-full relative"
         style={{
+          height: 'calc(var(--vh, 1vh) * 100)',
           touchAction: 'pan-y',
           overscrollBehavior: 'contain',
           willChange: 'transform'
