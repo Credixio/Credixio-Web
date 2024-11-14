@@ -20,55 +20,31 @@ const bebasNeue = Bebas_Neue({
 
 export default function Home() {
   useEffect(() => {
-    // Function to handle Safari's dynamic viewport
-    const handleSafariViewport = () => {
-      // Get the visible viewport height
-      const vh = window.innerHeight;
-      // Get the maximum viewport height (without Safari UI)
-      const maxVh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-      
-      // Set both values as CSS variables
-      document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
-      document.documentElement.style.setProperty('--max-vh', `${maxVh * 0.01}px`);
-      
-      // Force reflow to handle Safari's elastic scroll
-      document.body.style.height = `${maxVh}px`;
-      requestAnimationFrame(() => {
-        document.body.style.height = '';
-      });
+    // Function to handle Safari's address bar
+    const handleSafariScroll = () => {
+      // Only run on iOS Safari
+      if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
+        // Force layout recalculation
+        document.documentElement.style.height = `${window.innerHeight}px`;
+        window.requestAnimationFrame(() => {
+          document.documentElement.style.height = '';
+        });
+      }
     };
 
-    // Initial call
-    handleSafariViewport();
-
-    // Add event listeners with debounce
-    let timeoutId: NodeJS.Timeout;
-    const handleViewportChange = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(handleSafariViewport, 100);
-    };
-
-    window.addEventListener('resize', handleViewportChange);
-    window.addEventListener('orientationchange', handleViewportChange);
-    window.addEventListener('scroll', handleViewportChange, { passive: true });
+    window.addEventListener('scroll', handleSafariScroll, { passive: true });
+    window.addEventListener('resize', handleSafariScroll, { passive: true });
+    window.addEventListener('orientationchange', handleSafariScroll);
 
     return () => {
-      window.removeEventListener('resize', handleViewportChange);
-      window.removeEventListener('orientationchange', handleViewportChange);
-      window.removeEventListener('scroll', handleViewportChange);
-      clearTimeout(timeoutId);
+      window.removeEventListener('scroll', handleSafariScroll);
+      window.removeEventListener('resize', handleSafariScroll);
+      window.removeEventListener('orientationchange', handleSafariScroll);
     };
   }, []);
 
   return (
-    <main 
-      className="relative bg-[#1A1E1C]"
-      style={{ 
-        minHeight: 'calc(var(--max-vh, 1vh) * 100)',
-        height: 'calc(var(--vh, 1vh) * 100)',
-        WebkitOverflowScrolling: 'touch'
-      }}
-    >
+    <main className="relative min-h-screen bg-[#1A1E1C]">
       <Image 
         src="/assets/PageThread.png"
         alt="Background Thread"
