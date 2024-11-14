@@ -153,28 +153,9 @@ export default function CardSection() {
           end: () => `+=${section.offsetHeight * 2}`,
           pin: true,
           pinSpacing: true,
-          pinReparent: true,
           anticipatePin: 1,
           scrub: 1,
           fastScrollEnd: true,
-          onEnter: () => {
-            if (section) {
-              section.style.transform = 'translateZ(0)'
-              section.offsetHeight
-            }
-          },
-          onLeave: () => {
-            if (section) {
-              section.style.visibility = 'hidden'
-            }
-          },
-          onEnterBack: () => {
-            if (section) {
-              section.style.visibility = 'visible'
-              section.style.transform = 'translateZ(0)'
-              section.offsetHeight
-            }
-          },
           onUpdate: (self) => {
             const progress = Math.min(Math.max(self.progress, 0), 0.99)
             const currentIndex = Math.floor(progress * (totalCards - 0.01))
