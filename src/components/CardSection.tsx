@@ -152,8 +152,14 @@ export default function CardSection() {
           start: "top top",
           end: "+=200%",
           pin: true,
+          pinSpacing: true,
+          pinReparent: true,
+          invalidateOnRefresh: true,
           anticipatePin: 1,
           scrub: 1,
+          fastScrollEnd: true,
+          onEnterBack: () => ScrollTrigger.refresh(),
+          onLeaveBack: () => ScrollTrigger.refresh(),
           onUpdate: (self) => {
             const progress = Math.max(0, Math.min(self.progress * 1.1, 0.99))
             const currentIndex = Math.floor(progress * (totalCards - 0.01))
