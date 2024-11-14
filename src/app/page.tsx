@@ -221,42 +221,7 @@ export default function Home() {
         <div className="relative">
           <VideoSection />
           <div className="relative" style={{ zIndex: 2 }}>
-            {/* Info Cards Section */}
-            <section className="w-full py-10 lg:py-20 mt-20 lg:mt-40">
-              <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-32">
-                <div className="grid grid-cols-1 md:grid-cols-10 gap-6 lg:gap-8">
-                  {/* ... three info cards remain the same ... */}
-                </div>
-              </div>
-            </section>
-
-            {/* Card Animation Section */}
-            <section 
-              ref={sectionRef} 
-              id="card" 
-              className="w-full relative h-screen"
-              style={{
-                touchAction: 'pan-y',
-                overscrollBehavior: 'contain',
-                willChange: 'transform'
-              }}
-            >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="max-w-[1440px] w-full px-4 md:px-8 lg:px-32">
-                  <div className="flex flex-col lg:flex-row items-center gap-2 lg:gap-12 pt-[80px] lg:pt-0">
-                    {/* Left Side - Card Stack */}
-                    <div className="lg:w-1/2 h-[200px] lg:h-[600px] flex items-center justify-center relative">
-                      {/* ... card stack content remains the same ... */}
-                    </div>
-
-                    {/* Right Side - Card Info - Temporarily commented out */}
-                    {/* <div className="lg:w-1/2 min-h-[300px] h-[calc(60vh-80px)] lg:h-[600px] flex items-start lg:items-center">
-                      ... card info content ...
-                    </div> */}
-                  </div>
-                </div>
-              </div>
-            </section>
+            <CardSection />
           </div>
           <div className="relative" style={{ zIndex: 1 }}>
             <ScoreSection />
