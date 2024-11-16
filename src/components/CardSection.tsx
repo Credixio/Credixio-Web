@@ -440,8 +440,8 @@ export default function CardSection() {
           <div className="max-w-[1440px] w-full px-4 md:px-8 lg:px-32">
             <div className="flex flex-col lg:flex-row items-center gap-2 lg:gap-12 pt-[80px] lg:pt-0">
               {/* Left Side - Card Stack */}
-              <div className="lg:w-1/2 h-[200px] lg:h-[700px] flex items-center justify-center relative">
-                <div ref={cardsRef} className="relative w-[250px] lg:w-[400px] h-[200px] lg:h-[700px] z-20 mx-auto">
+              <div className="lg:w-1/2 h-[200px] lg:h-[650px] flex items-center justify-center relative">
+                <div ref={cardsRef} className="relative w-[250px] lg:w-[400px] h-[200px] lg:h-[650px] z-20 mx-auto">
                   {cards.map((card) => (
                     <div
                       key={card.id}
@@ -469,7 +469,7 @@ export default function CardSection() {
               </div>
 
               {/* Right Side - Card Info */}
-              <div className="lg:w-1/2 min-h-[300px] h-[calc(60vh-80px)] lg:h-[700px] flex items-start lg:items-center">
+              <div className="lg:w-1/2 min-h-[300px] h-[calc(60vh-80px)] lg:h-[650px] flex items-start lg:items-center">
                 <motion.div 
                   className="p-4 pt-5 sm:pt-6 lg:p-8 rounded-3xl w-full z-10 h-full max-w-[90vw] mx-auto flex flex-col"
                   initial={{ opacity: 0, y: 20 }}
