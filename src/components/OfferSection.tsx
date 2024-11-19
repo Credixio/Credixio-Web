@@ -174,6 +174,21 @@ export default function OfferSection() {
   // Add this state to track if user has scrolled for each card
   const [scrolledCards, setScrolledCards] = useState<number[]>([])
 
+  // Replace sectionScrollStates with this useEffect and state
+  const [scrolledSections, setScrolledSections] = useState<number[]>(() => {
+    // Initialize from localStorage if available
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('scrolledSections')
+      return saved ? JSON.parse(saved) : []
+    }
+    return []
+  })
+
+  // Save to localStorage when sections are scrolled
+  useEffect(() => {
+    localStorage.setItem('scrolledSections', JSON.stringify(scrolledSections))
+  }, [scrolledSections])
+
   const slideVariants = {
     enter: (direction: number) => ({
       x: direction > 0 ? 1000 : -1000,
@@ -209,7 +224,10 @@ export default function OfferSection() {
 
   const renderContent = (content: OfferItem['content'], item: OfferItem) => {
     return (
-      <div className="space-y-6 relative">
+      <div 
+        className="overflow-y-auto pr-4 relative"
+        onScroll={(e) => handleContentScroll(e, item.id)}
+      >
         {content.subheading1 && (
           <h4 className={`${bebasNeue.className} text-[#FFD700] text-xl`}>
             {content.subheading1}
@@ -314,6 +332,30 @@ export default function OfferSection() {
     return () => window.removeEventListener('resize', checkScrollable)
   }, [selectedOffer])
 
+  // Update the resetContentScroll function
+  const resetContentScroll = () => {
+    const contentContainers = document.querySelectorAll('.overflow-y-auto')
+    contentContainers.forEach(container => {
+      if (container instanceof HTMLElement) {
+        container.scrollTop = 0
+      }
+    })
+  }
+
+  // Modify the useEffect to handle section changes
+  useEffect(() => {
+    resetContentScroll()
+    // Don't reset the scroll state when changing sections
+  }, [selectedOffer])
+
+  // Update the scroll handler
+  const handleContentScroll = (e: React.UIEvent<HTMLDivElement>, sectionId: number) => {
+    const target = e.currentTarget
+    if (target.scrollTop > 0 && !scrolledSections.includes(sectionId)) {
+      setScrolledSections(prev => [...prev, sectionId])
+    }
+  }
+
   return (
     <section id="offering" className="w-full bg-background py-12 lg:py-20">
       <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-32">
@@ -356,7 +398,9 @@ export default function OfferSection() {
             {offerItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => setSelectedOffer(item)}
+                onClick={() => {
+                  setSelectedOffer(item)
+                }}
                 className="relative flex items-center gap-4 p-4 w-full text-left transition-all duration-300"
               >
                 {/* Selection Indicator */}
@@ -422,15 +466,7 @@ export default function OfferSection() {
                 <div className={`${selectedOffer.id === 4 ? 'w-full' : 'w-1/2'} relative`}>
                   <div 
                     className={`${selectedOffer.id === 4 ? 'h-full' : 'overflow-y-auto pr-4'} h-full relative`}
-                    onScroll={(e) => {
-                      const target = e.currentTarget
-                      setScrolledCards(prev => {
-                        if (!prev.includes(selectedOffer.id)) {
-                          return [...prev, selectedOffer.id]
-                        }
-                        return prev
-                      })
-                    }}
+                    onScroll={(e) => handleContentScroll(e, selectedOffer.id)}
                     style={{ 
                       scrollbarWidth: 'thin',
                       scrollbarColor: '#4A4A4A transparent',
@@ -452,8 +488,7 @@ export default function OfferSection() {
                     {renderContent(selectedOffer.content, selectedOffer)}
 
                     {/* Desktop Scroll Indicator */}
-                    {!scrolledCards.includes(selectedOffer.id) && 
-                     selectedOffer.id !== 4 && (
+                    {!scrolledSections.includes(selectedOffer.id) && selectedOffer.id !== 4 && (
                       <div 
                         ref={(el) => {
                           if (el) {
